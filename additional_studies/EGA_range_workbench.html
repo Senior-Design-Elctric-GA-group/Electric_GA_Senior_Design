@@ -1,0 +1,3424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>e-GA range workbench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=B612:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font: "B612", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --paper: #f6f8f7; --paper-2: #e9eeec; --paper-3: #dde5e1;
+  --ink: #15263a; --ink-2: #4b5c6c; --rule: #cbd5d0;
+  --accent: #a4236e; --focus: #1f5aa6;
+  --map-water: #c3dbe6; --map-land: #e3ead6; --map-border: #a3b298;
+  --map-grat: rgba(30, 60, 90, .12); --map-grat-text: rgba(30, 60, 90, .55);
+  --ring: rgba(164, 35, 110, .55); --ring-thin: rgba(164, 35, 110, .32); --ring-fill: rgba(164, 35, 110, .06);
+  --union-fill: rgba(164, 35, 110, .15); --union-inner: rgba(164, 35, 110, .14); --union-edge: #8d1c5d;
+  --apt-l: #0f3473; --apt-m: #1f5aa6; --apt-s: #3b6fb0; --apt-w: #157a80; --apt-halo: rgba(255, 255, 255, .92);
+  --reach: #0c7a3c; --dim: rgba(70, 85, 100, .35); --sel: #d6470e; --sel-fill: rgba(214, 71, 14, .045);
+  --spoke: rgba(12, 122, 60, .45); --route: #15263a; --route-case: rgba(255, 255, 255, .9);
+  --net: rgba(31, 90, 166, .38); --iso: #8a96a0;
+  --comp: #1f5aa6, #0c7a3c, #b35c00, #6a3fa0, #00798c, #a4236e, #7a6a1a;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121c26; --paper-2: #1a2734; --paper-3: #223243;
+    --ink: #dfe8ef; --ink-2: #9db0c1; --rule: #2b3b4b;
+    --accent: #e467ad; --focus: #84b3f5;
+    --map-water: #0d1d29; --map-land: #1c2b23; --map-border: #34483b;
+    --map-grat: rgba(170, 200, 220, .09); --map-grat-text: rgba(170, 200, 220, .5);
+    --ring: rgba(232, 111, 179, .55); --ring-thin: rgba(232, 111, 179, .3); --ring-fill: rgba(232, 111, 179, .06);
+    --union-fill: rgba(232, 111, 179, .16); --union-inner: rgba(232, 111, 179, .14); --union-edge: #f08cc4;
+    --apt-l: #b7d2ff; --apt-m: #8db8f6; --apt-s: #6f9bd8; --apt-w: #5fc8c8; --apt-halo: rgba(10, 20, 30, .88);
+    --reach: #4fd685; --dim: rgba(150, 170, 190, .3); --sel: #ff8a3d; --sel-fill: rgba(255, 138, 61, .08);
+    --spoke: rgba(79, 214, 133, .42); --route: #f4f7f9; --route-case: rgba(10, 20, 30, .9);
+    --net: rgba(141, 184, 246, .34); --iso: #6c7c8a;
+    --comp: #8db8f6, #4fd685, #ffb057, #b99af0, #4fd1d9, #e467ad, #d8c45c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121c26; --paper-2: #1a2734; --paper-3: #223243;
+  --ink: #dfe8ef; --ink-2: #9db0c1; --rule: #2b3b4b;
+  --accent: #e467ad; --focus: #84b3f5;
+  --map-water: #0d1d29; --map-land: #1c2b23; --map-border: #34483b;
+  --map-grat: rgba(170, 200, 220, .09); --map-grat-text: rgba(170, 200, 220, .5);
+  --ring: rgba(232, 111, 179, .55); --ring-thin: rgba(232, 111, 179, .3); --ring-fill: rgba(232, 111, 179, .06);
+  --union-fill: rgba(232, 111, 179, .16); --union-inner: rgba(232, 111, 179, .14); --union-edge: #f08cc4;
+  --apt-l: #b7d2ff; --apt-m: #8db8f6; --apt-s: #6f9bd8; --apt-w: #5fc8c8; --apt-halo: rgba(10, 20, 30, .88);
+  --reach: #4fd685; --dim: rgba(150, 170, 190, .3); --sel: #ff8a3d; --sel-fill: rgba(255, 138, 61, .08);
+  --spoke: rgba(79, 214, 133, .42); --route: #f4f7f9; --route-case: rgba(10, 20, 30, .9);
+  --net: rgba(141, 184, 246, .34); --iso: #6c7c8a;
+  --comp: #8db8f6, #4fd685, #ffb057, #b99af0, #4fd1d9, #e467ad, #d8c45c;
+  color-scheme: dark;
+}
+
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); background: var(--paper); }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: var(--font); font-size: 13px; line-height: 1.45; -webkit-font-smoothing: antialiased; overflow: hidden; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.tnum { font-variant-numeric: tabular-nums; }
+.muted { color: var(--ink-2); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.app { height: 100%; display: grid; grid-template-columns: 340px minmax(0, 1fr) auto; }
+
+/* ---------- control column ---------- */
+.controls { min-height: 0; overflow-y: auto; overscroll-behavior: contain; background: var(--paper); border-right: 1px solid var(--rule); padding: 18px 20px 32px; }
+.brand { display: flex; align-items: flex-start; gap: 8px; }
+.brand h1 { font-size: 16px; font-weight: 700; margin: 0; line-height: 1.25; }
+.brand p { margin: 3px 0 0; color: var(--ink-2); font-size: 12px; }
+.brand .grow { flex: 1; }
+.sect { border-top: 1px solid var(--rule); padding: 14px 0; }
+.sect h2 { font-size: 13px; font-weight: 700; margin: 0 0 9px; }
+.hint { font-size: 12px; color: var(--ink-2); margin: 8px 0 0; }
+
+/* the range instrument */
+.range { margin-top: 14px; padding: 12px 0 14px; border-top: 2px solid var(--ink); }
+.range > label { font-size: 12px; color: var(--ink-2); }
+.readout { display: flex; align-items: baseline; gap: 6px; }
+#rangeInput { width: 3.2ch; min-width: 2.2ch; font-size: 48px; font-weight: 700; line-height: 1.04; border: 0; padding: 0; margin: 0; background: transparent; color: var(--ink); font-variant-numeric: tabular-nums; -moz-appearance: textfield; appearance: textfield; border-radius: 2px; }
+#rangeInput::-webkit-outer-spin-button, #rangeInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.readout .unit { font-size: 16px; color: var(--ink-2); }
+.tape { --pct: 27%; -webkit-appearance: none; appearance: none; width: 100%; height: 26px; margin: 4px 0 0; background: transparent; cursor: pointer; }
+.tape::-webkit-slider-runnable-track { height: 26px; background:
+  linear-gradient(var(--accent), var(--accent)) 0 9px / var(--pct) 3px no-repeat,
+  linear-gradient(var(--rule), var(--rule)) 0 9px / 100% 3px no-repeat,
+  repeating-linear-gradient(90deg, var(--ink-2) 0 1px, transparent 1px 10%) 0 15px / calc(100% + 1px) 6px no-repeat,
+  repeating-linear-gradient(90deg, var(--ink-2) 0 1px, transparent 1px 2%) 0 15px / calc(100% + 1px) 3px no-repeat; }
+.tape::-moz-range-track { height: 26px; background:
+  linear-gradient(var(--accent), var(--accent)) 0 9px / var(--pct) 3px no-repeat,
+  linear-gradient(var(--rule), var(--rule)) 0 9px / 100% 3px no-repeat,
+  repeating-linear-gradient(90deg, var(--ink-2) 0 1px, transparent 1px 10%) 0 15px / calc(100% + 1px) 6px no-repeat,
+  repeating-linear-gradient(90deg, var(--ink-2) 0 1px, transparent 1px 2%) 0 15px / calc(100% + 1px) 3px no-repeat; }
+.tape::-webkit-slider-thumb { -webkit-appearance: none; width: 5px; height: 22px; margin-top: 0; background: var(--accent); border: 0; border-radius: 1px; box-shadow: 0 0 0 2px var(--paper); }
+.tape::-moz-range-thumb { width: 5px; height: 22px; background: var(--accent); border: 0; border-radius: 1px; box-shadow: 0 0 0 2px var(--paper); }
+.tape-scale { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--ink-2); margin-top: -2px; }
+.presets { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.presets button { padding: 3px 8px; border: 1px solid var(--rule); background: var(--paper); border-radius: 3px; cursor: pointer; font-size: 12px; font-variant-numeric: tabular-nums; }
+.presets button:hover { background: var(--paper-2); }
+.presets button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.chain { font-size: 12px; color: var(--ink-2); margin: 10px 0 0; }
+.chain b { color: var(--ink); font-weight: 700; }
+
+/* view modes */
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.modes button { padding: 7px 8px; text-align: left; border: 1px solid var(--rule); background: var(--paper); border-radius: 3px; cursor: pointer; font-size: 12.5px; }
+.modes button:hover { background: var(--paper-2); }
+.modes button[aria-checked="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.checks { display: grid; gap: 4px; margin-top: 10px; }
+.checks label, .chk { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+input[type=checkbox] { accent-color: var(--ink); width: 15px; height: 15px; margin: 0; flex: none; }
+
+/* fields */
+.field { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; margin: 6px 0; }
+.inp { display: flex; align-items: center; border: 1px solid var(--rule); background: var(--paper-2); border-radius: 3px; }
+.inp input { width: 8.5ch; -moz-appearance: textfield; appearance: textfield; border: 0; background: transparent; padding: 5px 4px 5px 7px; text-align: right; font-variant-numeric: tabular-nums; }
+.inp input:focus-visible { outline: none; }
+.inp input::-webkit-outer-spin-button, .inp input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.inp:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; }
+.inp .u { padding: 0 8px 0 2px; color: var(--ink-2); font-size: 12px; min-width: 2.2em; }
+.textfield { width: 100%; border: 1px solid var(--rule); background: var(--paper-2); border-radius: 3px; padding: 6px 8px; }
+select.textfield { padding: 5px 6px; }
+fieldset.sizes { border: 0; padding: 0; margin: 10px 0 4px; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+fieldset.sizes legend { padding: 0; margin-bottom: 4px; font-size: 12px; color: var(--ink-2); width: 100%; }
+.stack { display: grid; gap: 5px; margin-top: 8px; }
+.chk.dis { opacity: .5; }
+
+.funnel { margin-top: 12px; font-size: 12px; }
+.funnel .row { display: grid; grid-template-columns: 1fr auto; gap: 8px; color: var(--ink-2); padding: 1px 0; }
+.funnel .row span:last-child { font-variant-numeric: tabular-nums; }
+.funnel .row.total { color: var(--ink); font-weight: 700; border-top: 1px solid var(--rule); margin-top: 4px; padding-top: 5px; }
+
+details.adv { border-top: 1px solid var(--rule); padding: 12px 0; }
+details.adv > summary { cursor: pointer; font-weight: 700; list-style: none; display: flex; align-items: center; gap: 6px; }
+details.adv > summary::-webkit-details-marker { display: none; }
+details.adv > summary::before { content: ""; width: 0; height: 0; border-left: 5px solid var(--ink); border-top: 4px solid transparent; border-bottom: 4px solid transparent; transition: transform .15s; }
+details.adv[open] > summary::before { transform: rotate(90deg); }
+details.adv .body { padding-top: 8px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 11px; border: 1px solid var(--rule); border-radius: 3px; background: var(--paper); cursor: pointer; text-decoration: none; line-height: 1.3; }
+.btn:hover { background: var(--paper-2); }
+.btn.solid { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.btn.solid:hover { filter: brightness(1.15); }
+.btn[disabled] { opacity: .5; cursor: default; }
+.btnrow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.file { position: relative; overflow: hidden; }
+.file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.file:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
+.datastate { font-size: 12px; margin: 0 0 6px; }
+.datastate b { font-weight: 700; }
+.badge { display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 3px; border: 1px solid var(--rule); color: var(--ink-2); vertical-align: 1px; }
+.badge.warn { border-color: var(--sel); color: var(--sel); }
+.method p { font-size: 12px; color: var(--ink-2); margin: 0 0 8px; }
+a { color: var(--focus); }
+
+/* ---------- map ---------- */
+.mapwrap { position: relative; min-width: 0; overflow: hidden; background: var(--map-water); }
+#map { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; outline: none; }
+#map.grabbing { cursor: grabbing; }
+#map:focus-visible { box-shadow: inset 0 0 0 2px var(--focus); }
+.maptop { position: absolute; top: 12px; left: 12px; right: 60px; display: flex; gap: 8px; align-items: flex-start; pointer-events: none; z-index: 4; }
+.maptop > * { pointer-events: auto; }
+.search { position: relative; width: min(380px, 100%); }
+.search input { width: 100%; padding: 8px 12px; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); box-shadow: 0 1px 3px rgba(10, 30, 50, .12); }
+.search ul { position: absolute; top: calc(100% + 4px); left: 0; right: 0; margin: 0; padding: 3px; list-style: none; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; max-height: 330px; overflow-y: auto; box-shadow: 0 6px 18px rgba(10, 30, 50, .18); }
+.search li { padding: 6px 8px; border-radius: 3px; cursor: pointer; display: grid; grid-template-columns: 4.6em 1fr; gap: 8px; }
+.search li b { font-weight: 700; }
+.search li .x { color: var(--ink-2); font-size: 11.5px; grid-column: 2; }
+.search li[aria-selected="true"], .search li:hover { background: var(--paper-2); }
+.search li.no { color: var(--ink-2); display: block; cursor: default; }
+.openctl { display: none; }
+.mapctl { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 4px; z-index: 4; }
+.mapctl button { width: 36px; height: 36px; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); cursor: pointer; font-size: 18px; line-height: 1; display: grid; place-items: center; box-shadow: 0 1px 3px rgba(10, 30, 50, .12); }
+.mapctl button:hover { background: var(--paper-2); }
+.mapctl svg { width: 18px; height: 18px; }
+.legend { position: absolute; right: 12px; bottom: 38px; z-index: 3; max-width: 290px; background: var(--paper); background: color-mix(in srgb, var(--paper) 93%, transparent); border: 1px solid var(--rule); border-radius: 4px; padding: 8px 10px; font-size: 11.5px; line-height: 1.4; }
+.legend .li { display: grid; grid-template-columns: 22px 1fr; align-items: center; gap: 6px; margin: 2px 0; }
+.legend .sw { width: 22px; height: 12px; }
+.legend .note { color: var(--ink-2); margin-top: 4px; }
+.scale { position: absolute; left: 12px; bottom: 36px; z-index: 3; font-size: 11px; color: var(--ink); pointer-events: none; }
+.scale .bar { height: 7px; border: 2px solid var(--ink); border-top: 0; margin-top: 2px; }
+.scale .bar2 { height: 5px; border: 1.5px solid var(--ink-2); border-bottom: 0; margin-top: 2px; }
+.scale .km { color: var(--ink-2); }
+.status { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; display: flex; justify-content: space-between; gap: 14px; padding: 5px 12px; font-size: 11px; color: var(--ink-2); background: var(--paper); background: color-mix(in srgb, var(--paper) 90%, transparent); border-top: 1px solid var(--rule); white-space: nowrap; overflow: hidden; }
+.status span { overflow: hidden; text-overflow: ellipsis; }
+.tip { position: absolute; z-index: 6; pointer-events: none; max-width: 300px; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 6px 9px; font-size: 12px; box-shadow: 0 4px 14px rgba(10, 30, 50, .2); }
+.tip b { font-weight: 700; }
+.tip .m { color: var(--ink-2); }
+.toast { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); z-index: 7; background: var(--ink); color: var(--paper); border-radius: 4px; padding: 7px 12px; font-size: 12.5px; max-width: min(520px, 90%); box-shadow: 0 6px 18px rgba(10, 30, 50, .25); }
+.drop { position: absolute; inset: 10px; z-index: 8; border: 2px dashed var(--accent); border-radius: 8px; display: grid; place-items: center; background: color-mix(in srgb, var(--paper) 80%, transparent); font-size: 15px; font-weight: 700; pointer-events: none; }
+[hidden] { display: none !important; }
+
+/* ---------- selected airport ---------- */
+.info { width: 420px; min-height: 0; overflow-y: auto; overscroll-behavior: contain; background: var(--paper); border-left: 1px solid var(--rule); padding: 16px 18px 32px; }
+.info .head { display: flex; align-items: flex-start; gap: 8px; }
+.info .head .grow { flex: 1; min-width: 0; }
+.info .ident { font-size: 30px; font-weight: 700; line-height: 1.05; }
+.info .name { font-size: 15px; margin-top: 3px; }
+.info .kind { color: var(--ink-2); font-size: 12px; margin-top: 3px; }
+.closex { border: 0; background: transparent; cursor: pointer; font-size: 22px; line-height: 1; padding: 2px 6px; color: var(--ink-2); border-radius: 3px; }
+.closex:hover { background: var(--paper-2); color: var(--ink); }
+.elig { margin-top: 10px; padding: 7px 9px; border-left: 3px solid var(--reach); background: var(--paper-2); font-size: 12px; }
+.elig.no { border-left-color: var(--sel); }
+dl.facts { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; margin: 14px 0 0; font-size: 12.5px; }
+dl.facts dt { color: var(--ink-2); }
+dl.facts dd { margin: 0; font-variant-numeric: tabular-nums; }
+.reachbox { margin-top: 16px; border-top: 2px solid var(--ink); padding-top: 10px; }
+.reachbox h3, .info h3 { font-size: 13px; margin: 0 0 6px; font-weight: 700; }
+.reachline { display: grid; grid-template-columns: 4.2em 1fr; gap: 10px; align-items: baseline; margin: 3px 0; }
+.reachline .v { font-size: 20px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.reachline .v.small { font-size: 14px; }
+.route { margin-top: 16px; border-top: 1px solid var(--rule); padding-top: 12px; }
+.routeform { display: flex; gap: 6px; }
+.routeform input { flex: 1; min-width: 0; }
+.legs { margin: 8px 0 0; padding: 0; list-style: none; font-size: 12px; counter-reset: leg; }
+.legs li { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 3px 0; border-bottom: 1px solid var(--paper-3); }
+.legs li span:last-child { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.tablehead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 18px; border-top: 1px solid var(--rule); padding-top: 12px; }
+.tablehead h3 { margin: 0; }
+.tablewrap { overflow-x: auto; margin-top: 6px; }
+table.rt { width: 100%; border-collapse: collapse; font-size: 12px; }
+.rt th { text-align: left; font-weight: 700; padding: 5px 3px; border-bottom: 1px solid var(--rule); white-space: nowrap; position: sticky; top: 0; background: var(--paper); }
+.rt th button { all: unset; cursor: pointer; }
+.rt th button:focus-visible { outline: 2px solid var(--focus); }
+.rt th.n, .rt td.n { text-align: right; }
+.rt td { padding: 4px 3px; border-bottom: 1px solid var(--paper-3); font-variant-numeric: tabular-nums; }
+.rt td.nm { max-width: 104px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rt tbody tr { cursor: pointer; }
+.rt tbody tr:hover td, .rt tbody tr:focus-visible td { background: var(--paper-2); }
+.more { margin-top: 8px; }
+.empty { color: var(--ink-2); font-size: 12px; margin-top: 8px; }
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .controls { position: fixed; z-index: 30; top: 0; bottom: 0; left: 0; width: min(90vw, 360px); padding-top: calc(18px + env(safe-area-inset-top, 0px)); padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px)); transform: translateX(-104%); transition: transform .2s ease; box-shadow: 4px 0 24px rgba(10, 30, 50, .25); }
+  .controls.open { transform: none; }
+  .openctl { display: inline-flex; }
+  .info { position: fixed; z-index: 25; left: 0; right: 0; bottom: 0; width: auto; max-height: 55vh; border-left: 0; border-top: 1px solid var(--rule); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -6px 24px rgba(10, 30, 50, .2); }
+  .legend { display: none; }
+  .legend.show { display: block; bottom: 38px; }
+  .maptop { right: 56px; }
+  .search { flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="controls" id="controls" aria-label="Analysis controls">
+    <div class="brand">
+      <div class="grow">
+        <h1>e-GA range workbench</h1>
+        <p>Coverage and airport connectivity for a battery-electric Part 23 aircraft</p>
+      </div>
+      <button class="closex openctl" id="closeControls" aria-label="Close controls">×</button>
+    </div>
+
+    <section class="range" aria-labelledby="rangeLbl">
+      <label id="rangeLbl" for="rangeInput">Aircraft range</label>
+      <div class="readout">
+        <input id="rangeInput" type="number" inputmode="decimal" min="10" max="5000" step="1" value="270" aria-describedby="rangeChain">
+        <span class="unit">nmi</span>
+      </div>
+      <input id="rangeSlider" class="tape" type="range" min="0" max="1000" step="5" value="270" aria-label="Aircraft range, nautical miles">
+      <div class="tape-scale" aria-hidden="true"><span>0</span><span>250</span><span>500</span><span>750</span><span>1000</span></div>
+      <div class="presets" id="presets" role="group" aria-label="Range presets">
+        <button type="button" data-r="100">100</button><button type="button" data-r="150">150</button><button type="button" data-r="200">200</button><button type="button" data-r="270">270</button><button type="button" data-r="350">350</button><button type="button" data-r="500">500</button>
+      </div>
+      <p class="chain" id="rangeChain"></p>
+    </section>
+
+    <section class="sect" aria-labelledby="viewLbl">
+      <h2 id="viewLbl">View</h2>
+      <div class="modes" id="modes" role="radiogroup" aria-labelledby="viewLbl">
+        <button type="button" role="radio" data-mode="circles" aria-checked="true">Airport circles</button>
+        <button type="button" role="radio" data-mode="union" aria-checked="false">Combined coverage</button>
+        <button type="button" role="radio" data-mode="connect" aria-checked="false">Connectivity</button>
+        <button type="button" role="radio" data-mode="network" aria-checked="false">Network</button>
+      </div>
+      <p class="hint" id="modeHint"></p>
+      <div class="checks">
+        <label><input type="checkbox" id="tgMarkers" checked> Airport markers</label>
+        <label><input type="checkbox" id="tgCircles" checked> Range circles</label>
+        <label><input type="checkbox" id="tgLabels" checked> Identifiers when zoomed in</label>
+      </div>
+    </section>
+
+    <section class="sect" aria-labelledby="eligLbl">
+      <h2 id="eligLbl">Airport eligibility</h2>
+      <div class="field"><label for="fMinRwy">Minimum runway</label><span class="inp"><input id="fMinRwy" type="number" min="0" max="20000" step="100" value="2000"><span class="u">ft</span></span></div>
+      <div class="field"><label for="fMaxElev">Maximum field elevation</label><span class="inp"><input id="fMaxElev" type="number" min="-1500" max="20000" step="500" value="15000"><span class="u">ft</span></span></div>
+      <div class="stack">
+        <label class="chk"><input type="checkbox" id="fPaved"> Paved runway required</label>
+        <label class="chk"><input type="checkbox" id="fPublic" checked> Public-use airports only</label>
+        <label class="chk" id="fPrivateWrap"><input type="checkbox" id="fPrivate"> Include private airports</label>
+        <label class="chk"><input type="checkbox" id="fUnknownRwy"> Keep airports with no runway data</label>
+      </div>
+      <fieldset class="sizes">
+        <legend>Airport size</legend>
+        <label class="chk"><input type="checkbox" id="fTypeS" checked> Small</label>
+        <label class="chk"><input type="checkbox" id="fTypeM" checked> Medium</label>
+        <label class="chk"><input type="checkbox" id="fTypeL" checked> Large</label>
+        <label class="chk"><input type="checkbox" id="fTypeW"> Seaplane bases</label>
+      </fieldset>
+      <label for="fCountries" class="muted" style="font-size:12px">Countries, ISO codes (blank for all)</label>
+      <input id="fCountries" class="textfield" type="text" placeholder="e.g. US, CA, MX" autocomplete="off" spellcheck="false">
+      <div class="funnel" id="funnel" aria-live="polite"></div>
+    </section>
+
+    <details class="adv" id="advRange">
+      <summary>Range model</summary>
+      <div class="body">
+        <div class="field"><label for="rmReserve">Battery reserve</label><span class="inp"><input id="rmReserve" type="number" min="0" max="95" step="1" value="0"><span class="u">%</span></span></div>
+        <div class="field"><label for="rmDivert">Diversion allowance</label><span class="inp"><input id="rmDivert" type="number" min="0" max="2000" step="5" value="0"><span class="u">nmi</span></span></div>
+        <label for="rmBasis" class="muted" style="font-size:12px">Coverage circle radius</label>
+        <select id="rmBasis" class="textfield">
+          <option value="oneway">Usable range (one-way reach)</option>
+          <option value="action">Half usable range (out and back)</option>
+        </select>
+        <p class="hint">Usable range = range × (1 − reserve) − diversion. Airport-to-airport links always use the full usable range.</p>
+      </div>
+    </details>
+
+    <details class="adv" id="advTO">
+      <summary>Takeoff and density altitude</summary>
+      <div class="body">
+        <label class="chk"><input type="checkbox" id="daOn"> Scale required runway with density altitude</label>
+        <div class="field"><label for="daRwy">Runway required at sea level, ISA</label><span class="inp"><input id="daRwy" type="number" min="0" max="15000" step="100" value="2000"><span class="u">ft</span></span></div>
+        <div class="field"><label for="daPct">Increase per 1,000 ft density altitude</label><span class="inp"><input id="daPct" type="number" min="0" max="50" step="1" value="10"><span class="u">%</span></span></div>
+        <div class="field"><label for="daIsa">Temperature above ISA</label><span class="inp"><input id="daIsa" type="number" min="-40" max="50" step="1" value="15"><span class="u">°C</span></span></div>
+        <p class="hint">Required runway = max(minimum runway, sea-level requirement × (1 + k × DA / 1000)), with DA ≈ field elevation + 118.8 ft per °C above ISA.</p>
+      </div>
+    </details>
+
+    <section class="sect" aria-labelledby="dataLbl">
+      <h2 id="dataLbl">Airport data</h2>
+      <p class="datastate" id="dataState"></p>
+      <div class="btnrow">
+        <label class="btn solid file">Load OurAirports files<input type="file" id="fileInput" accept=".csv,text/csv" multiple></label>
+        <button type="button" class="btn" id="useDemo" hidden>Use built-in sample</button>
+      </div>
+      <p class="hint">Download <b>airports.csv</b> and <b>runways.csv</b> from <a href="https://ourairports.com/data/" target="_blank" rel="noopener">ourairports.com/data</a> (public domain), then select both, or drop them on the map. Parsing runs in this browser and the result is kept for your next visit. Any CSV with latitude and longitude columns also works.</p>
+      <div class="btnrow"><button type="button" class="btn" id="exportElig">Download eligible airports (CSV)</button></div>
+    </section>
+
+    <section class="sect method" aria-labelledby="methodLbl">
+      <h2 id="methodLbl">Method</h2>
+      <p>Distances are great-circle distances on a sphere of mean radius 3,440.07 nmi (haversine); the difference from the WGS-84 ellipsoid stays below 0.5%.</p>
+      <p>Each range circle is traced on the sphere with the destination-point formula (up to 256 vertices) and only then projected to Web Mercator, so circles stretch correctly toward the poles and wrap across the antimeridian.</p>
+      <p>Combined coverage is the union of all circles. The network view links airports within one usable range of each other; colours mark groups that are mutually reachable with recharging at every stop.</p>
+      <p id="useNote">OurAirports has no public/private field, so use is inferred from identifiers: ICAO, IATA and 3-character FAA codes count as public; FAA codes like CA12 and locally assigned IDs count as private.</p>
+      <p>Basemap: Natural Earth via Datamaps (MIT). Airport data: OurAirports (public domain).</p>
+    </section>
+  </aside>
+
+  <main class="mapwrap" id="mapwrap">
+    <canvas id="map" tabindex="0" role="application" aria-label="World map of eligible airports and range coverage. Drag to pan, scroll or pinch to zoom, arrow keys to pan, plus and minus to zoom, Escape to clear the selection."></canvas>
+    <div class="maptop">
+      <button type="button" class="btn openctl" id="openControls" aria-controls="controls" aria-expanded="false">Controls</button>
+      <div class="search" id="searchBox">
+        <input id="search" type="search" placeholder="Find airport by ICAO, IATA or name" aria-label="Find airport" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="searchList" aria-autocomplete="list">
+        <ul id="searchList" role="listbox" hidden></ul>
+      </div>
+    </div>
+    <div class="mapctl" role="group" aria-label="Map controls">
+      <button type="button" id="zIn" aria-label="Zoom in">+</button>
+      <button type="button" id="zOut" aria-label="Zoom out">−</button>
+      <button type="button" id="zReset" aria-label="Reset view" title="Reset view"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M3 10h14M10 3c2.4 2 2.4 12 0 14M10 3c-2.4 2-2.4 12 0 14"/></svg></button>
+      <button type="button" id="legendBtn" class="openctl" aria-label="Show legend" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 5h12M4 10h12M4 15h12"/></svg></button>
+    </div>
+    <div class="legend" id="legend" aria-live="polite"></div>
+    <div class="scale" id="scale" aria-hidden="true"></div>
+    <div class="status" id="status"><span id="readout">Move over the map for coordinates</span><span id="perf"></span></div>
+    <div class="tip" id="tip" hidden></div>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <div class="drop" id="drop" hidden>Drop airports.csv and runways.csv</div>
+  </main>
+
+  <aside class="info" id="info" aria-label="Selected airport" hidden></aside>
+</div>
+<script>
+'use strict';
+/* =========================================================================
+   MODEL LAYER (DOM-free): geodesy, projection, data import, range model,
+   eligibility constraints, spatial index and network analysis.
+
+   Extension points for future aircraft constraints
+     RangeModel.compute()  max range -> reserve / diversion -> usable range
+                           -> coverage-circle radius
+     CONSTRAINTS[]         ordered airport-eligibility rules; add an object
+                           with {id, label, test(a, p), why(a, p)}
+     requiredRunwayFt()    takeoff-performance / density-altitude hook used
+                           by the runway rule
+   ========================================================================= */
+
+const DEG = Math.PI / 180;
+const EARTH_R_NMI = 6371008.8 / 1852;          // IUGG mean radius, 3440.07 nmi
+const MERC_MAX_LAT = 85.0511287798066;
+const CIRCLE_N = 256;                          // vertices per full-resolution circle
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+
+/* ---------- Geodesy on a sphere --------------------------------------- */
+const Geo = {
+  R: EARTH_R_NMI,
+  /** Haversine great-circle distance, nmi */
+  dist(lat1, lon1, lat2, lon2) {
+    const p1 = lat1 * DEG, p2 = lat2 * DEG;
+    const s1 = Math.sin((p2 - p1) / 2), s2 = Math.sin(((lon2 - lon1) * DEG) / 2);
+    const a = s1 * s1 + Math.cos(p1) * Math.cos(p2) * s2 * s2;
+    return 2 * EARTH_R_NMI * Math.asin(Math.min(1, Math.sqrt(a)));
+  },
+  /** Initial true bearing, degrees */
+  bearing(lat1, lon1, lat2, lon2) {
+    const p1 = lat1 * DEG, p2 = lat2 * DEG, dl = (lon2 - lon1) * DEG;
+    const y = Math.sin(dl) * Math.cos(p2);
+    const x = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl);
+    return (Math.atan2(y, x) / DEG + 360) % 360;
+  },
+  /** Destination point given start, true bearing and distance (nmi) */
+  dest(lat, lon, brg, d) {
+    const p1 = lat * DEG, t = brg * DEG, dr = d / EARTH_R_NMI;
+    const sp2 = Math.sin(p1) * Math.cos(dr) + Math.cos(p1) * Math.sin(dr) * Math.cos(t);
+    const p2 = Math.asin(clamp(sp2, -1, 1));
+    const dl = Math.atan2(Math.sin(t) * Math.sin(dr) * Math.cos(p1), Math.cos(dr) - Math.sin(p1) * sp2);
+    return [p2 / DEG, ((lon + dl / DEG + 540) % 360) - 180];
+  },
+  unit(lat, lon) {
+    const p = lat * DEG, l = lon * DEG, c = Math.cos(p);
+    return [c * Math.cos(l), c * Math.sin(l), Math.sin(p)];
+  },
+  /** Chord length on the unit sphere -> great-circle distance in nmi */
+  chordNmi(ch) { return 2 * EARTH_R_NMI * Math.asin(Math.min(1, ch / 2)); },
+  /** Great-circle polyline A->B with n segments; longitudes unwrapped from lon1 */
+  path(lat1, lon1, lat2, lon2, n) {
+    const a = Geo.unit(lat1, lon1), b = Geo.unit(lat2, lon2);
+    const dot = clamp(a[0] * b[0] + a[1] * b[1] + a[2] * b[2], -1, 1);
+    const om = Math.acos(dot), so = Math.sin(om);
+    const out = new Float64Array((n + 1) * 2);
+    let prev = lon1;
+    for (let i = 0; i <= n; i++) {
+      const f = i / n;
+      let A = 1 - f, B = f;
+      if (so > 1e-12) { A = Math.sin((1 - f) * om) / so; B = Math.sin(f * om) / so; }
+      const x = A * a[0] + B * b[0], y = A * a[1] + B * b[1], z = A * a[2] + B * b[2];
+      let lon = Math.atan2(y, x) / DEG;
+      while (lon - prev > 180) lon -= 360;
+      while (lon - prev < -180) lon += 360;
+      prev = lon;
+      out[2 * i] = Math.atan2(z, Math.sqrt(x * x + y * y)) / DEG;
+      out[2 * i + 1] = lon;
+    }
+    return out;
+  },
+};
+
+/* ---------- Web Mercator in world units (0..1) ------------------------- */
+const Merc = {
+  x(lon) { return (lon + 180) / 360; },
+  y(lat) {
+    const p = clamp(lat, -MERC_MAX_LAT, MERC_MAX_LAT) * DEG;
+    return 0.5 - Math.log(Math.tan(Math.PI / 4 + p / 2)) / (2 * Math.PI);
+  },
+  lat(y) { return (2 * Math.atan(Math.exp((0.5 - y) * 2 * Math.PI)) - Math.PI / 2) / DEG; },
+  lon(x) { return x * 360 - 180; },
+};
+
+/* ---------- Geodesic circle templates ----------------------------------
+   A geodesic circle's shape in Mercator depends only on its centre latitude,
+   so one template per 0.1 deg of latitude is translated to every airport.
+   Vertices come from the spherical destination formula (true geodesic
+   circle), then are projected. Circles enclosing a pole are closed along
+   the projection edge so they fill correctly. */
+class CircleTemplates {
+  constructor(radiusNmi) {
+    this.r = radiusNmi;
+    this.d = Math.min(radiusNmi / EARTH_R_NMI, Math.PI * 0.995);
+    this.cache = new Map();
+  }
+  get(lat) {
+    const key = Math.round(clamp(lat, -89.9, 89.9) * 10);
+    let t = this.cache.get(key);
+    if (!t) { t = this.build(key / 10); this.cache.set(key, t); }
+    return t;
+  }
+  build(lat0) {
+    const N = CIRCLE_N, d = this.d;
+    const p1 = lat0 * DEG, sp1 = Math.sin(p1), cp1 = Math.cos(p1);
+    const cd = Math.cos(d), sd = Math.sin(d);
+    const north = d > Math.PI / 2 - p1 + 1e-12;
+    const south = !north && d > Math.PI / 2 + p1 + 1e-12;
+    const enclosed = north || south;
+    const y0 = Merc.y(lat0);
+    const main = enclosed ? N + 1 : N;
+    const n = enclosed ? N + 3 : N;
+    const xs = new Float32Array(n), ys = new Float32Array(n);
+    const t0 = north ? Math.PI : 0;
+    let prev = 0;
+    for (let i = 0; i < main; i++) {
+      const t = t0 + (2 * Math.PI * i) / N;
+      const sp2 = sp1 * cd + cp1 * sd * Math.cos(t);
+      const p2 = Math.asin(clamp(sp2, -1, 1));
+      let dl = Math.atan2(Math.sin(t) * sd * cp1, cd - sp1 * sp2);
+      if (i > 0) {
+        while (dl - prev > Math.PI) dl -= 2 * Math.PI;
+        while (dl - prev < -Math.PI) dl += 2 * Math.PI;
+      }
+      prev = dl;
+      xs[i] = dl / (2 * Math.PI);
+      ys[i] = Merc.y(p2 / DEG) - y0;
+    }
+    if (enclosed) {
+      const yp = (north ? 0 : 1) - y0;
+      xs[main] = xs[main - 1]; ys[main] = yp;
+      xs[main + 1] = xs[0]; ys[main + 1] = yp;
+    }
+    // All templates share one winding so a single non-zero fill gives the union.
+    let area = 0;
+    for (let i = 0, j = n - 1; i < n; j = i++) area += xs[j] * ys[i] - xs[i] * ys[j];
+    let noLod = false;
+    if (area < 0) { xs.reverse(); ys.reverse(); noLod = true; }
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (let i = 0; i < n; i++) {
+      if (xs[i] < minX) minX = xs[i]; if (xs[i] > maxX) maxX = xs[i];
+      if (ys[i] < minY) minY = ys[i]; if (ys[i] > maxY) maxY = ys[i];
+    }
+    return { xs, ys, n, main, enclosed, noLod, minX, maxX, minY, maxY, rx: (maxX - minX) / 2 };
+  }
+}
+
+/* ---------- CSV ---------------------------------------------------------- */
+function detectDelimiter(text) {
+  const line = text.slice(0, 4000).split(/\r?\n/)[0] || '';
+  const counts = [[',', 0], [';', 0], ['\t', 0], ['|', 0]];
+  for (const c of counts) c[1] = line.split(c[0]).length - 1;
+  counts.sort((a, b) => b[1] - a[1]);
+  return counts[0][1] > 0 ? counts[0][0] : ',';
+}
+
+/** RFC-4180 CSV parser (quoted fields, escaped quotes, CRLF). */
+function parseCSV(text, delim) {
+  const D = (delim || ',').charCodeAt(0);
+  const rows = [], n = text.length;
+  let row = [], i = n && text.charCodeAt(0) === 0xfeff ? 1 : 0;
+  if (!n) return rows;
+  for (;;) {
+    let val, c;
+    if (i < n && text.charCodeAt(i) === 34) {
+      let j = i + 1, s = '';
+      for (;;) {
+        const q = text.indexOf('"', j);
+        if (q < 0) { s += text.slice(j); i = n; break; }
+        if (text.charCodeAt(q + 1) === 34) { s += text.slice(j, q + 1); j = q + 2; continue; }
+        s += text.slice(j, q); i = q + 1; break;
+      }
+      while (i < n) { c = text.charCodeAt(i); if (c === D || c === 10 || c === 13) break; i++; }
+      val = s;
+    } else {
+      let j = i;
+      while (j < n) { c = text.charCodeAt(j); if (c === D || c === 10 || c === 13) break; j++; }
+      val = text.slice(i, j); i = j;
+    }
+    row.push(val);
+    c = i < n ? text.charCodeAt(i) : -1;
+    if (c === D) { i++; continue; }
+    if (!(row.length === 1 && row[0] === '')) rows.push(row);
+    row = [];
+    if (c === 13) i++;
+    if (i < n && text.charCodeAt(i) === 10) i++;
+    if (c === -1 || i >= n) break;
+  }
+  return rows;
+}
+
+function headerIndex(row) {
+  const m = {};
+  row.forEach((h, i) => { m[String(h).trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')] = i; });
+  return m;
+}
+
+/* ---------- Airport normalisation --------------------------------------- */
+const TYPE_LABEL = { L: 'Large airport', M: 'Medium airport', S: 'Small airport', W: 'Seaplane base', H: 'Heliport', C: 'Closed', B: 'Balloonport' };
+const TYPE_CODE = { L: 0, M: 1, S: 2, W: 3 };
+const OA_TYPES = { large_airport: 'L', medium_airport: 'M', small_airport: 'S', seaplane_base: 'W', heliport: 'H', closed: 'C', balloonport: 'B' };
+
+function classifySurface(s) {
+  if (!s) return 'unknown';
+  const t = String(s).toUpperCase();
+  if (/WAT/.test(t)) return 'water';
+  if (/ASP|CON|BIT|PEM|TAR|PAV|CEM|MAC|ASF|BET|SEAL|BRICK|HARD/.test(t)) return 'paved';
+  if (/TURF|GRASS|GRS|GRAS|GRAV|GRVL|GVL|GRE|DIRT|SAND|CLAY|EARTH|SOIL|LAT|COR|SNOW|ICE|PSP|MAT|SOD|ROCK|SHALE|CAL|TRTD|TREAT|UNPAV|NAT|GROUND|SILT|STONE|MUD|SALT|LOAM/.test(t)) return 'unpaved';
+  return 'unknown';
+}
+
+function normType(s) {
+  const t = String(s || '').trim().toLowerCase();
+  if (!t) return 'S';
+  if (OA_TYPES[t]) return OA_TYPES[t];
+  if (t.length === 1 && 'lmswhcb'.includes(t)) return t.toUpperCase();
+  if (/large/.test(t)) return 'L';
+  if (/medium/.test(t)) return 'M';
+  if (/heli/.test(t)) return 'H';
+  if (/seaplane|water/.test(t)) return 'W';
+  if (/closed|abandon/.test(t)) return 'C';
+  if (/balloon/.test(t)) return 'B';
+  return 'S';
+}
+
+/** Public/private use. Explicit data wins; otherwise inferred from identifiers. */
+function inferUse(a) {
+  if (a.type === 'L' || a.type === 'M' || a.sched) return 'public';
+  const id = a.ident || '';
+  if (id.includes('-')) return 'private';               // OurAirports-assigned local IDs
+  if (a.country === 'US') {
+    if (/^K[A-Z]{3}$/.test(id) || /^P[A-Z]{3}$/.test(id)) return 'public';
+    if (/^[A-Z0-9]{3}$/.test(id)) return 'public';       // 3-character FAA LID
+    if (/^[A-Z0-9]{4}$/.test(id) && /\d/.test(id)) return 'private'; // e.g. CA12, 1CA0
+    return 'unknown';
+  }
+  if (a.iata) return 'public';
+  if (/^[A-Z]{4}$/.test(a.icao || '')) return 'public';
+  return 'unknown';
+}
+
+function normUse(v) {
+  const t = String(v || '').trim().toLowerCase();
+  if (!t) return null;
+  if (/^pu|public/.test(t)) return 'public';
+  if (/^pr|private/.test(t)) return 'private';
+  return null;
+}
+
+function mkAirport(o) {
+  const a = {
+    ident: (o.ident || '').trim(), icao: '', iata: (o.iata || '').trim().toUpperCase(), local: (o.local || '').trim(),
+    name: (o.name || '').trim() || o.ident, lat: +o.lat, lon: +o.lon,
+    elev: o.elev === '' || o.elev == null || isNaN(+o.elev) ? null : +o.elev,
+    type: o.type || 'S', country: (o.country || '').toUpperCase(), region: o.region || '', city: o.city || '',
+    sched: !!o.sched, rwy: o.rwy == null ? null : o.rwy, rwyPaved: o.rwyPaved == null ? null : o.rwyPaved,
+    rwySurf: o.rwySurf || '', rwyCls: o.rwyCls || 'unknown', rwyW: o.rwyW || null, nRwy: o.nRwy || 0,
+    water: o.water || null, use: 'unknown', useBasis: 'inferred',
+  };
+  const icaoCand = (o.icao || '').trim().toUpperCase();
+  a.icao = /^[A-Z]{4}$/.test(icaoCand) ? icaoCand
+    : /^[A-Z]{4}$/.test((o.gps || '').trim()) ? o.gps.trim()
+    : /^[A-Z]{4}$/.test(a.ident) ? a.ident : '';
+  const explicit = normUse(o.use);
+  if (explicit) { a.use = explicit; a.useBasis = 'data'; } else a.use = inferUse(a);
+  return a;
+}
+
+/** OurAirports airports.csv (+ optional runways.csv) */
+function buildFromOurAirports(airRows, rwyRows, label) {
+  if (!airRows || airRows.length < 2) throw new Error('airports.csv is empty.');
+  const H = headerIndex(airRows[0]);
+  for (const k of ['ident', 'type', 'latitude_deg', 'longitude_deg']) if (!(k in H)) throw new Error('airports.csv is missing the "' + k + '" column.');
+  const g = (row, k) => (k in H ? row[H[k]] || '' : '');
+  const airports = [], byRef = new Map(), byIdent = new Map();
+  let dropped = 0;
+  for (let r = 1; r < airRows.length; r++) {
+    const row = airRows[r];
+    const type = OA_TYPES[g(row, 'type')] || normType(g(row, 'type'));
+    if (type === 'H' || type === 'C' || type === 'B') { dropped++; continue; }
+    const lat = parseFloat(g(row, 'latitude_deg')), lon = parseFloat(g(row, 'longitude_deg'));
+    if (!isFinite(lat) || !isFinite(lon)) { dropped++; continue; }
+    const a = mkAirport({
+      ident: g(row, 'ident'), icao: g(row, 'icao_code'), gps: g(row, 'gps_code'), iata: g(row, 'iata_code'), local: g(row, 'local_code'),
+      name: g(row, 'name'), lat, lon, elev: g(row, 'elevation_ft'), type, country: g(row, 'iso_country'),
+      region: g(row, 'iso_region'), city: g(row, 'municipality'), sched: g(row, 'scheduled_service') === 'yes',
+    });
+    airports.push(a);
+    if (g(row, 'id')) byRef.set(g(row, 'id'), a);
+    byIdent.set(a.ident, a);
+  }
+  let hasRunways = false;
+  if (rwyRows && rwyRows.length > 1) {
+    hasRunways = true;
+    const R = headerIndex(rwyRows[0]);
+    const q = (row, k) => (k in R ? row[R[k]] || '' : '');
+    for (let r = 1; r < rwyRows.length; r++) {
+      const row = rwyRows[r];
+      const a = byRef.get(q(row, 'airport_ref')) || byIdent.get(q(row, 'airport_ident'));
+      if (!a || q(row, 'closed') === '1') continue;
+      const le = q(row, 'le_ident').toUpperCase();
+      if (/^H\d*$/.test(le)) continue;                  // helipads
+      a.nRwy++;
+      const len = parseFloat(q(row, 'length_ft')), w = parseFloat(q(row, 'width_ft'));
+      if (!(len > 0)) continue;
+      const surf = q(row, 'surface'), cls = classifySurface(surf);
+      if (cls === 'water') { a.water = Math.max(a.water || 0, len); continue; }
+      if (a.rwyPaved == null) a.rwyPaved = 0;
+      if (len > (a.rwy || 0)) { a.rwy = len; a.rwySurf = surf; a.rwyCls = cls; a.rwyW = w > 0 ? w : null; }
+      if (cls === 'paved' && len > a.rwyPaved) a.rwyPaved = len;
+    }
+  }
+  return { airports, meta: { source: 'ourairports', label: label || 'OurAirports', approx: false, hasRunways, dropped, loadedAt: Date.now() } };
+}
+
+const SYN = {
+  ident: ['ident', 'icao', 'icao_code', 'gps_code', 'airport_id', 'id', 'code', 'faa', 'lid', 'loc_id', 'location_id', 'arpt_id'],
+  iata: ['iata', 'iata_code'],
+  name: ['name', 'airport', 'airport_name', 'facility_name', 'arpt_name'],
+  lat: ['lat', 'latitude', 'latitude_deg', 'lat_deg', 'lat_decimal', 'y'],
+  lon: ['lon', 'lng', 'long', 'longitude', 'longitude_deg', 'lon_deg', 'long_decimal', 'x'],
+  elev: ['elevation_ft', 'elevation', 'elev_ft', 'elev', 'alt', 'altitude', 'field_elevation'],
+  type: ['type', 'airport_type', 'size', 'category', 'class'],
+  rwy: ['longest_runway_ft', 'runway_length_ft', 'rwy_len', 'rwy_length', 'runway_ft', 'runway_length', 'length_ft', 'max_runway', 'longest_runway'],
+  surface: ['runway_surface', 'surface', 'rwy_surface'],
+  country: ['iso_country', 'country', 'country_code', 'cc'],
+  region: ['iso_region', 'region', 'state', 'state_code'],
+  city: ['municipality', 'city'],
+  use: ['use', 'facility_use', 'public_private', 'usage', 'ownership_use'],
+  paved: ['paved', 'is_paved'],
+};
+
+/** Any CSV with recognisable latitude/longitude columns */
+function buildFromGeneric(rows, label) {
+  if (!rows || rows.length < 2) throw new Error('The CSV file is empty.');
+  const H = headerIndex(rows[0]);
+  const col = {};
+  for (const k in SYN) { const hit = SYN[k].find((s) => s in H); col[k] = hit == null ? -1 : H[hit]; }
+  if (col.lat < 0 || col.lon < 0) throw new Error('No latitude/longitude columns found. Expected headers such as "latitude" and "longitude".');
+  const g = (row, k) => (col[k] >= 0 ? row[col[k]] || '' : '');
+  const airports = [];
+  let hasRunways = col.rwy >= 0;
+  for (let r = 1; r < rows.length; r++) {
+    const row = rows[r];
+    const lat = parseFloat(g(row, 'lat')), lon = parseFloat(g(row, 'lon'));
+    if (!isFinite(lat) || !isFinite(lon)) continue;
+    const type = normType(g(row, 'type'));
+    if (type === 'H' || type === 'C' || type === 'B') continue;
+    const len = parseFloat(g(row, 'rwy'));
+    const surf = g(row, 'surface');
+    let cls = classifySurface(surf);
+    const pv = g(row, 'paved').toLowerCase();
+    if (pv) cls = /^(1|y|yes|true)$/.test(pv) ? 'paved' : 'unpaved';
+    const rwy = len > 0 ? len : null;
+    airports.push(mkAirport({
+      ident: g(row, 'ident') || 'ROW' + r, iata: g(row, 'iata'), name: g(row, 'name'), lat, lon, elev: g(row, 'elev'), type,
+      country: g(row, 'country'), region: g(row, 'region'), city: g(row, 'city'), use: g(row, 'use'),
+      rwy, rwyPaved: rwy == null ? null : cls === 'paved' ? rwy : 0, rwySurf: surf, rwyCls: cls, nRwy: rwy ? 1 : 0,
+    }));
+  }
+  if (!airports.length) throw new Error('No rows with valid coordinates were found.');
+  return { airports, meta: { source: 'custom', label: label || 'Custom CSV', approx: false, hasRunways, dropped: 0, loadedAt: Date.now() } };
+}
+
+/** Built-in sample: ident|iata|name|lat|lon|elev ft|type|longest runway ft|P/U/W|country */
+function buildDemo(raw) {
+  const airports = [];
+  for (const line of raw.trim().split('\n')) {
+    const f = line.split('|');
+    if (f.length < 10) continue;
+    const len = +f[7] || null, s = f[8].trim();
+    const water = s === 'W';
+    airports.push(mkAirport({
+      ident: f[0], iata: f[1], name: f[2], lat: +f[3], lon: +f[4], elev: f[5], type: f[6], country: f[9].trim(),
+      rwy: water ? null : len, rwyPaved: water ? null : s === 'P' ? len : 0,
+      rwySurf: s === 'P' ? 'Paved' : s === 'U' ? 'Unpaved' : 'Water',
+      rwyCls: s === 'P' ? 'paved' : s === 'U' ? 'unpaved' : 'water', water: water ? len : null, nRwy: 1,
+      sched: f[6] === 'L' || f[6] === 'M',
+    }));
+  }
+  return { airports, meta: { source: 'demo', label: 'Built-in sample', approx: true, hasRunways: true, dropped: 0, loadedAt: 0 } };
+}
+
+/* ---------- Range model -------------------------------------------------- */
+const RangeModel = {
+  /** p.range is treated as the usable point-to-point range in v1; reserve and
+      diversion default to zero so usable = input until they are set. */
+  compute(p) {
+    const max = Math.max(0, +p.range || 0);
+    const reserveFrac = clamp((+p.reservePct || 0) / 100, 0, 0.95);
+    const afterReserve = max * (1 - reserveFrac);
+    const divert = Math.max(0, +p.divertNmi || 0);
+    const usable = Math.max(0, afterReserve - divert);
+    const radius = usable * (p.basis === 'action' ? 0.5 : 1);
+    // Future stages: payload-dependent max range, wind, mission profiles.
+    return { max, reserveFrac, afterReserve, divert, usable, radius, basis: p.basis === 'action' ? 'action' : 'oneway' };
+  },
+};
+
+/* ---------- Eligibility constraints ------------------------------------- */
+function densityAltitudeFt(elevFt, isaDevC) { return (elevFt || 0) + 118.8 * (isaDevC || 0); }
+
+function requiredRunwayFt(a, p) {
+  let req = +p.minRwy || 0;
+  if (p.da && p.da.on) {
+    const da = Math.max(0, densityAltitudeFt(a.elev, p.da.isaDev));
+    req = Math.max(req, (+p.da.slRwy || 0) * (1 + ((+p.da.pct || 0) / 100) * (da / 1000)));
+  }
+  return req;
+}
+
+const fmtFt = (v) => Math.round(v).toLocaleString('en-US') + ' ft';
+
+const CONSTRAINTS = [
+  {
+    id: 'country', label: 'Country filter',
+    test: (a, p) => !p.countrySet || p.countrySet.has(a.country),
+    why: (a) => 'Country ' + (a.country || 'unknown') + ' is outside the country filter',
+  },
+  {
+    id: 'type', label: 'Airport size and type',
+    test: (a, p) => (a.type === 'W' ? !!p.seaplane : !!(p.types && p.types[a.type])),
+    why: (a) => (TYPE_LABEL[a.type] || 'This facility type') + 's are switched off',
+  },
+  {
+    id: 'use', label: 'Public or private use',
+    test: (a, p) => (p.publicOnly ? a.use === 'public' : p.includePrivate || a.use !== 'private'),
+    why: (a, p) => (p.publicOnly ? 'Only public-use airports are included; this one is ' + (a.use === 'private' ? 'private' : 'of unknown use') : 'Private airports are excluded'),
+  },
+  {
+    id: 'elev', label: 'Field elevation',
+    test: (a, p) => a.elev == null || a.elev <= p.maxElev,
+    why: (a, p) => 'Field elevation ' + fmtFt(a.elev) + ' is above the ' + fmtFt(p.maxElev) + ' limit',
+  },
+  {
+    id: 'paved', label: 'Paved runway',
+    test: (a, p) => !p.paved || a.type === 'W' || (a.rwyPaved == null ? !!p.unknownRwy : a.rwyPaved > 0),
+    why: (a) => (a.rwyPaved == null ? 'No runway surface data' : 'No paved runway'),
+  },
+  {
+    id: 'runway', label: 'Runway length',
+    test: (a, p) => {
+      if (a.type === 'W') return a.water == null || a.water >= requiredRunwayFt(a, p);
+      const L = p.paved ? a.rwyPaved : a.rwy;
+      if (L == null) return !!p.unknownRwy;
+      return L >= requiredRunwayFt(a, p);
+    },
+    why: (a, p) => {
+      const L = p.paved ? a.rwyPaved : a.rwy;
+      if (L == null) return 'No runway length data';
+      return (p.paved ? 'Longest paved runway ' : 'Longest runway ') + fmtFt(L) + ' is shorter than the ' + fmtFt(requiredRunwayFt(a, p)) + ' required';
+    },
+  },
+];
+
+function prepParams(p) {
+  const q = Object.assign({}, p);
+  const list = String(p.countries || '').toUpperCase().split(/[^A-Z]+/).filter((s) => s.length === 2);
+  q.countrySet = list.length ? new Set(list) : null;
+  return q;
+}
+
+function evaluateEligibility(airports, params) {
+  const p = prepParams(params);
+  const keep = [], rejected = new Array(CONSTRAINTS.length).fill(0);
+  for (let i = 0; i < airports.length; i++) {
+    const a = airports[i];
+    let ok = true;
+    for (let c = 0; c < CONSTRAINTS.length; c++) {
+      if (!CONSTRAINTS[c].test(a, p)) { rejected[c]++; ok = false; break; }
+    }
+    if (ok) keep.push(i);
+  }
+  return { keep, rejected, total: airports.length };
+}
+
+function whyIneligible(a, params) {
+  const p = prepParams(params);
+  for (const c of CONSTRAINTS) if (!c.test(a, p)) return c.why(a, p);
+  return null;
+}
+
+/* ---------- Eligible-set arrays ----------------------------------------- */
+function buildEligible(airports, keep) {
+  const n = keep.length;
+  const E = {
+    n, idx: new Int32Array(n), lat: new Float64Array(n), lon: new Float64Array(n),
+    wx: new Float64Array(n), wy: new Float64Array(n),
+    ux: new Float64Array(n), uy: new Float64Array(n), uz: new Float64Array(n),
+    type: new Uint8Array(n), pos: new Int32Array(airports.length).fill(-1),
+  };
+  for (let k = 0; k < n; k++) {
+    const i = keep[k], a = airports[i];
+    E.idx[k] = i; E.pos[i] = k;
+    E.lat[k] = a.lat; E.lon[k] = a.lon;
+    E.wx[k] = Merc.x(a.lon); E.wy[k] = Merc.y(a.lat);
+    const p = a.lat * DEG, l = a.lon * DEG, c = Math.cos(p);
+    E.ux[k] = c * Math.cos(l); E.uy[k] = c * Math.sin(l); E.uz[k] = Math.sin(p);
+    E.type[k] = TYPE_CODE[a.type] == null ? 2 : TYPE_CODE[a.type];
+  }
+  return E;
+}
+
+/* ---------- 3-D hash grid on the unit sphere ----------------------------
+   Cell edge = chord(R)/sqrt(3): every pair inside one cell is within range,
+   and any pair within range lies at most two cells apart. No pole or
+   antimeridian special cases. */
+class SphereGrid {
+  constructor(E, legNmi) {
+    this.E = E;
+    const ang = Math.min(legNmi / EARTH_R_NMI, Math.PI);
+    this.cosR = Math.cos(ang);
+    this.chord = 2 * Math.sin(ang / 2);
+    this.h = Math.max(1e-4, (this.chord / Math.sqrt(3)) * 0.999);
+    this.inv = 1 / this.h;
+    this.K = Math.ceil(this.inv) + 2;
+    this.M = 2 * this.K + 1;
+    const cells = new Map();
+    for (let i = 0; i < E.n; i++) {
+      const ix = Math.floor(E.ux[i] * this.inv), iy = Math.floor(E.uy[i] * this.inv), iz = Math.floor(E.uz[i] * this.inv);
+      const key = this.key(ix, iy, iz);
+      let c = cells.get(key);
+      if (!c) { c = { ix, iy, iz, pts: [] }; cells.set(key, c); }
+      c.pts.push(i);
+    }
+    this.cells = cells;
+  }
+  key(ix, iy, iz) { return ((ix + this.K) * this.M + (iy + this.K)) * this.M + (iz + this.K); }
+  /** Calls fn(j, dot) for every point within cosR of unit vector (x, y, z) */
+  query(x, y, z, cosR, fn) {
+    const E = this.E, X = E.ux, Y = E.uy, Z = E.uz;
+    const ch = Math.sqrt(Math.max(0, 2 - 2 * cosR));
+    const r = Math.ceil(ch * this.inv) + 1;
+    const ix = Math.floor(x * this.inv), iy = Math.floor(y * this.inv), iz = Math.floor(z * this.inv);
+    const K = this.K;
+    const x0 = Math.max(-K, ix - r), x1 = Math.min(K, ix + r);
+    const y0 = Math.max(-K, iy - r), y1 = Math.min(K, iy + r);
+    const z0 = Math.max(-K, iz - r), z1 = Math.min(K, iz + r);
+    for (let a = x0; a <= x1; a++) for (let b = y0; b <= y1; b++) for (let c = z0; c <= z1; c++) {
+      const cell = this.cells.get(this.key(a, b, c));
+      if (!cell) continue;
+      const pts = cell.pts;
+      for (let k = 0; k < pts.length; k++) {
+        const j = pts[k];
+        const d = x * X[j] + y * Y[j] + z * Z[j];
+        if (d >= cosR) fn(j, d);
+      }
+    }
+  }
+}
+
+/* ---------- Network analysis -------------------------------------------- */
+/** Connected components of the "within one leg" graph (union-find). */
+function computeComponents(E, grid) {
+  const n = E.n, parent = new Int32Array(n), size = new Int32Array(n).fill(1);
+  for (let i = 0; i < n; i++) parent[i] = i;
+  const find = (i) => { while (parent[i] !== i) { parent[i] = parent[parent[i]]; i = parent[i]; } return i; };
+  const union = (a, b) => {
+    a = find(a); b = find(b);
+    if (a === b) return;
+    if (size[a] < size[b]) { const t = a; a = b; b = t; }
+    parent[b] = a; size[a] += size[b];
+  };
+  const X = E.ux, Y = E.uy, Z = E.uz, cosR = grid.cosR;
+  for (const c of grid.cells.values()) for (let k = 1; k < c.pts.length; k++) union(c.pts[0], c.pts[k]);
+  for (const [keyA, A] of grid.cells) {
+    for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) for (let dz = -2; dz <= 2; dz++) {
+      if (!dx && !dy && !dz) continue;
+      const bx = A.ix + dx, by = A.iy + dy, bz = A.iz + dz;
+      if (Math.abs(bx) > grid.K || Math.abs(by) > grid.K || Math.abs(bz) > grid.K) continue;
+      const keyB = grid.key(bx, by, bz);
+      if (keyB <= keyA) continue;
+      const B = grid.cells.get(keyB);
+      if (!B || find(A.pts[0]) === find(B.pts[0])) continue;
+      outer: for (const i of A.pts) {
+        const xi = X[i], yi = Y[i], zi = Z[i];
+        for (const j of B.pts) if (xi * X[j] + yi * Y[j] + zi * Z[j] >= cosR) { union(i, j); break outer; }
+      }
+    }
+  }
+  const comp = new Int32Array(n), rootId = new Map(), sizes = [];
+  for (let i = 0; i < n; i++) {
+    const r = find(i);
+    let id = rootId.get(r);
+    if (id == null) { id = sizes.length; rootId.set(r, id); sizes.push(0); }
+    comp[i] = id; sizes[id]++;
+  }
+  const order = sizes.map((s, i) => i).sort((a, b) => sizes[b] - sizes[a]);
+  const rank = new Int32Array(sizes.length);
+  order.forEach((id, r) => { rank[id] = r; });
+  return { comp, sizes, rank, count: sizes.length, largest: sizes.length ? sizes[order[0]] : 0, isolated: sizes.filter((s) => s === 1).length };
+}
+
+/** Eligible airports within one leg of a point, sorted by distance. */
+function reachFrom(E, lat, lon, leg, selfE) {
+  const [x, y, z] = Geo.unit(lat, lon);
+  const cosR = Math.cos(Math.min(Math.PI, leg / EARTH_R_NMI));
+  const out = [];
+  let nearest = -1, nd = Infinity;
+  for (let j = 0; j < E.n; j++) {
+    if (j === selfE) continue;
+    const dx = x - E.ux[j], dy = y - E.uy[j], dz = z - E.uz[j];
+    const ch = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    const dot = x * E.ux[j] + y * E.uy[j] + z * E.uz[j];
+    const d = Geo.chordNmi(ch);
+    if (d < nd) { nd = d; nearest = j; }
+    if (dot >= cosR) out.push({ e: j, d });
+  }
+  out.sort((a, b) => a.d - b.d);
+  return { list: out, nearest, nearestD: nd };
+}
+
+/** Airports reachable in at most two legs (excluding the origin). */
+function twoLegCount(E, grid, direct, selfE) {
+  const mark = new Uint8Array(E.n);
+  let cnt = 0;
+  if (selfE >= 0) mark[selfE] = 1;
+  for (const r of direct) if (!mark[r.e]) { mark[r.e] = 1; cnt++; }
+  for (const r of direct) {
+    grid.query(E.ux[r.e], E.uy[r.e], E.uz[r.e], grid.cosR, (j) => { if (!mark[j]) { mark[j] = 1; cnt++; } });
+  }
+  return cnt;
+}
+
+class MinHeap {
+  constructor() { this.k = []; this.v = []; }
+  get size() { return this.v.length; }
+  push(val, key) {
+    const K = this.k, V = this.v;
+    let i = V.length; K.push(key); V.push(val);
+    while (i > 0) { const p = (i - 1) >> 1; if (K[p] <= key) break; K[i] = K[p]; V[i] = V[p]; i = p; }
+    K[i] = key; V[i] = val;
+  }
+  pop() {
+    const K = this.k, V = this.v, top = V[0], lk = K.pop(), lv = V.pop(), n = V.length;
+    if (n > 0) {
+      let i = 0;
+      for (;;) {
+        let c = 2 * i + 1;
+        if (c >= n) break;
+        if (c + 1 < n && K[c + 1] < K[c]) c++;
+        if (K[c] >= lk) break;
+        K[i] = K[c]; V[i] = V[c]; i = c;
+      }
+      K[i] = lk; V[i] = lv;
+    }
+    return top;
+  }
+}
+
+/** Multi-leg route with recharging at every stop: fewest legs, then shortest
+    total distance (A* with an admissible leg-count heuristic). */
+function findRoute(E, grid, s, t, leg) {
+  if (s === t) return { path: [s], legs: 0, total: 0, longest: 0 };
+  const n = E.n, BIG = 1e7, cosR = grid.cosR;
+  const g = new Float64Array(n).fill(Infinity), prev = new Int32Array(n).fill(-1), closed = new Uint8Array(n);
+  const tx = E.ux[t], ty = E.uy[t], tz = E.uz[t];
+  const chord = (i, x, y, z) => { const dx = E.ux[i] - x, dy = E.uy[i] - y, dz = E.uz[i] - z; return Math.sqrt(dx * dx + dy * dy + dz * dz); };
+  const h = (i) => { const d = Geo.chordNmi(chord(i, tx, ty, tz)); return d < 1e-9 ? 0 : Math.ceil(d / leg - 1e-9) * BIG + d; };
+  const heap = new MinHeap();
+  g[s] = 0; heap.push(s, h(s));
+  let expanded = 0;
+  const LIMIT = 300000;
+  while (heap.size) {
+    const u = heap.pop();
+    if (closed[u]) continue;
+    closed[u] = 1;
+    if (u === t) break;
+    if (++expanded > LIMIT) return { path: null, aborted: true, expanded };
+    const ux = E.ux[u], uy = E.uy[u], uz = E.uz[u], gu = g[u];
+    grid.query(ux, uy, uz, cosR, (v) => {
+      if (closed[v]) return;
+      const ng = gu + BIG + Geo.chordNmi(chord(v, ux, uy, uz));
+      if (ng < g[v]) { g[v] = ng; prev[v] = u; heap.push(v, ng + h(v)); }
+    });
+  }
+  if (!closed[t]) return { path: null, expanded };
+  const path = [];
+  for (let v = t; v !== -1; v = prev[v]) path.push(v);
+  path.reverse();
+  let total = 0, longest = 0;
+  for (let i = 1; i < path.length; i++) {
+    const d = Geo.chordNmi(chord(path[i], E.ux[path[i - 1]], E.uy[path[i - 1]], E.uz[path[i - 1]]));
+    total += d; if (d > longest) longest = d;
+  }
+  return { path, legs: path.length - 1, total, longest, expanded };
+}
+
+/* ---------- TopoJSON -> Path2D-ready rings (Mercator world units) ------- */
+function topoRings(topo) {
+  const objs = topo && topo.objects ? Object.values(topo.objects) : [];
+  if (!objs.length) return [];
+  const tf = topo.transform;
+  const arcs = topo.arcs.map((arc) => {
+    const out = new Float64Array(arc.length * 2);
+    let x = 0, y = 0;
+    for (let i = 0; i < arc.length; i++) {
+      let lon, lat;
+      if (tf) { x += arc[i][0]; y += arc[i][1]; lon = x * tf.scale[0] + tf.translate[0]; lat = y * tf.scale[1] + tf.translate[1]; }
+      else { lon = arc[i][0]; lat = arc[i][1]; }
+      out[2 * i] = Merc.x(lon); out[2 * i + 1] = Merc.y(lat);
+    }
+    return out;
+  });
+  const rings = [];
+  const ring = (idxs) => {
+    const pts = [];
+    idxs.forEach((ai, n) => {
+      const rev = ai < 0, a = arcs[rev ? ~ai : ai];
+      if (!a) return;
+      const m = a.length / 2;
+      for (let k = n ? 1 : 0; k < m; k++) { const j = rev ? m - 1 - k : k; pts.push(a[2 * j], a[2 * j + 1]); }
+    });
+    if (pts.length >= 6) rings.push(pts);
+  };
+  const geom = (g) => {
+    if (!g) return;
+    if (g.type === 'Polygon') g.arcs.forEach(ring);
+    else if (g.type === 'MultiPolygon') g.arcs.forEach((poly) => poly.forEach(ring));
+    else if (g.type === 'GeometryCollection') g.geometries.forEach(geom);
+  };
+  objs.forEach(geom);
+  return rings;
+}
+
+/* Built-in sample: approximate, hand-entered reference values for trying the
+   tool. Load the OurAirports CSV files for analysis-grade data.
+   ident|iata|name|lat|lon|elevation ft|type L/M/S/W|longest runway ft|surface P/U/W|country */
+const DEMO_DATA = `
+KSFO|SFO|San Francisco International|37.6190|-122.3749|13|L|11870|P|US
+KOAK|OAK|Oakland International|37.7213|-122.2208|9|L|10520|P|US
+KSJC|SJC|San Jose International|37.3626|-121.9291|62|L|11000|P|US
+KPAO||Palo Alto|37.4611|-122.1150|4|S|2443|P|US
+KSQL|SQL|San Carlos|37.5119|-122.2495|5|S|2600|P|US
+KHWD|HWD|Hayward Executive|37.6592|-122.1217|52|S|5694|P|US
+KLVK|LVK|Livermore Municipal|37.6934|-121.8204|400|S|5253|P|US
+KCCR|CCR|Buchanan Field|37.9897|-122.0569|26|S|5001|P|US
+KAPC|APC|Napa County|38.2132|-122.2807|35|S|5931|P|US
+O69||Petaluma Municipal|38.2578|-122.6056|87|S|3600|P|US
+KSTS|STS|Charles M. Schulz Sonoma County|38.5090|-122.8129|128|M|6000|P|US
+1O2||Lampson Field|38.9906|-122.9010|1380|S|3600|P|US
+KUKI|UKI|Ukiah Municipal|39.1260|-123.2009|614|S|4423|P|US
+KACV|ACV|California Redwood Coast-Humboldt County|40.9781|-124.1086|221|M|6046|P|US
+KCEC|CEC|Del Norte County|41.7802|-124.2366|61|S|5002|P|US
+KRDD|RDD|Redding Regional|40.5090|-122.2934|505|M|7003|P|US
+KCIC|CIC|Chico Regional|39.7954|-121.8584|238|S|6724|P|US
+KSMF|SMF|Sacramento International|38.6954|-121.5908|27|L|8605|P|US
+KSAC|SAC|Sacramento Executive|38.5125|-121.4935|24|S|5503|P|US
+KAUN|AUN|Auburn Municipal|38.9548|-121.0817|1539|S|3700|P|US
+KTRK|TKF|Truckee Tahoe|39.3200|-120.1396|5901|S|7001|P|US
+KTVL|TVL|Lake Tahoe|38.8939|-119.9953|6264|S|8544|P|US
+O22||Columbia|38.0304|-120.4146|2118|S|4670|P|US
+KSCK|SCK|Stockton Metropolitan|37.8942|-121.2386|33|M|10249|P|US
+KMOD|MOD|Modesto City-County|37.6258|-120.9544|97|S|5911|P|US
+KMCE|MCE|Merced Regional|37.2848|-120.5139|155|S|5914|P|US
+KFAT|FAT|Fresno Yosemite International|36.7762|-119.7181|336|M|9539|P|US
+KVIS|VIS|Visalia Municipal|36.3187|-119.3928|295|S|6559|P|US
+KBFL|BFL|Meadows Field|35.4336|-119.0568|510|M|10857|P|US
+E16||San Martin|37.0816|-121.5966|281|S|3091|P|US
+KWVI|WVI|Watsonville Municipal|36.9357|-121.7896|163|S|4501|P|US
+KMRY|MRY|Monterey Regional|36.5870|-121.8430|257|M|7175|P|US
+KSNS|SNS|Salinas Municipal|36.6628|-121.6064|85|S|6004|P|US
+KPRB|PRB|Paso Robles Municipal|35.6729|-120.6271|840|S|6009|P|US
+KSBP|SBP|San Luis Obispo County Regional|35.2368|-120.6424|212|M|6100|P|US
+L52||Oceano County|35.1013|-120.6223|14|S|2325|P|US
+KSMX|SMX|Santa Maria Public|34.8989|-120.4575|261|S|8004|P|US
+KSBA|SBA|Santa Barbara Municipal|34.4262|-119.8404|13|M|6052|P|US
+KOXR|OXR|Oxnard|34.2008|-119.2072|45|S|5953|P|US
+KCMA||Camarillo|34.2137|-119.0943|77|S|6013|P|US
+KVNY|VNY|Van Nuys|34.2098|-118.4900|802|M|8001|P|US
+KBUR|BUR|Hollywood Burbank|34.2007|-118.3585|778|L|6886|P|US
+KLAX|LAX|Los Angeles International|33.9425|-118.4081|128|L|12923|P|US
+KTOA|TOA|Zamperini Field|33.8034|-118.3396|103|S|5000|P|US
+KLGB|LGB|Long Beach|33.8177|-118.1516|60|M|10000|P|US
+KSNA|SNA|John Wayne-Orange County|33.6757|-117.8682|56|L|5701|P|US
+KCNO|CNO|Chino|33.9747|-117.6366|650|S|7000|P|US
+KONT|ONT|Ontario International|34.0560|-117.6012|944|L|12197|P|US
+KRAL|RAL|Riverside Municipal|33.9519|-117.4451|819|S|5401|P|US
+KPSP|PSP|Palm Springs International|33.8297|-116.5067|477|M|10000|P|US
+KTRM|TRM|Jacqueline Cochran Regional|33.6267|-116.1597|-115|S|8500|P|US
+KCRQ|CLD|McClellan-Palomar|33.1283|-117.2800|331|S|4897|P|US
+KSAN|SAN|San Diego International|32.7336|-117.1897|17|L|9401|P|US
+KMYF|MYF|Montgomery-Gibbs Executive|32.8157|-117.1396|427|S|4577|P|US
+KSEE|SEE|Gillespie Field|32.8262|-116.9724|388|S|5342|P|US
+KMHV|MHV|Mojave Air and Space Port|35.0594|-118.1519|2801|S|12503|P|US
+KWJF|WJF|General William J. Fox Airfield|34.7411|-118.2186|2351|S|7201|P|US
+KAPV|APV|Apple Valley|34.5753|-117.1861|3062|S|6498|P|US
+KIYK|IYK|Inyokern|35.6588|-117.8296|2457|S|7344|P|US
+KBIH|BIH|Bishop|37.3731|-118.3636|4124|S|7498|P|US
+KMMH|MMH|Mammoth Yosemite|37.6241|-118.8378|7135|S|7000|P|US
+KBLH|BLH|Blythe|33.6192|-114.7169|399|S|6562|P|US
+KIPL|IPL|Imperial County|32.8342|-115.5786|-54|S|5308|P|US
+KDAG|DAG|Barstow-Daggett|34.8537|-116.7867|1930|S|6402|P|US
+KEED|EED|Needles|34.7663|-114.6233|983|S|5005|P|US
+KTSP|TSP|Tehachapi Municipal|35.1350|-118.4390|4001|S|4040|P|US
+KSEA|SEA|Seattle-Tacoma International|47.4490|-122.3093|433|L|11901|P|US
+KBFI|BFI|King County International Boeing Field|47.5300|-122.3020|21|M|10007|P|US
+KPAE|PAE|Paine Field|47.9063|-122.2816|606|M|9010|P|US
+KBLI|BLI|Bellingham International|48.7928|-122.5375|170|M|6700|P|US
+KOLM|OLM|Olympia Regional|46.9694|-122.9025|209|S|5500|P|US
+KPDX|PDX|Portland International|45.5887|-122.5975|31|L|11000|P|US
+KHIO|HIO|Portland-Hillsboro|45.5404|-122.9498|208|M|6600|P|US
+KSLE|SLE|Salem McNary Field|44.9095|-123.0026|214|S|5811|P|US
+KEUG|EUG|Eugene Mahlon Sweet Field|44.1246|-123.2119|374|M|8009|P|US
+KMFR|MFR|Rogue Valley International-Medford|42.3742|-122.8735|1335|M|8800|P|US
+KRDM|RDM|Roberts Field|44.2541|-121.1500|3080|M|7038|P|US
+KOTH|OTH|Southwest Oregon Regional|43.4171|-124.2460|17|S|5980|P|US
+KLMT|LMT|Crater Lake-Klamath Regional|42.1561|-121.7330|4095|S|10302|P|US
+KPSC|PSC|Tri-Cities|46.2647|-119.1190|410|M|7711|P|US
+KYKM|YKM|Yakima Air Terminal|46.5682|-120.5440|1099|S|7604|P|US
+KGEG|GEG|Spokane International|47.6199|-117.5338|2376|L|11002|P|US
+KBOI|BOI|Boise Air Terminal|43.5644|-116.2228|2871|M|10000|P|US
+KTWF|TWF|Magic Valley Regional|42.4818|-114.4877|4154|S|8703|P|US
+KIDA|IDA|Idaho Falls Regional|43.5146|-112.0708|4744|S|9002|P|US
+KMSO|MSO|Missoula Montana|46.9163|-114.0906|3206|M|9501|P|US
+KBZN|BZN|Bozeman Yellowstone International|45.7775|-111.1530|4473|M|9003|P|US
+KBIL|BIL|Billings Logan International|45.8077|-108.5430|3652|M|10528|P|US
+KGTF|GTF|Great Falls International|47.4820|-111.3707|3680|M|10502|P|US
+KRNO|RNO|Reno-Tahoe International|39.4991|-119.7681|4415|L|11002|P|US
+KEKO|EKO|Elko Regional|40.8249|-115.7917|5140|S|7454|P|US
+KWMC|WMC|Winnemucca Municipal|40.8966|-117.8059|4308|S|6200|P|US
+KLAS|LAS|Harry Reid International|36.0840|-115.1537|2181|L|14515|P|US
+KHND|HSH|Henderson Executive|35.9728|-115.1344|2492|S|6501|P|US
+KTPH|TPH|Tonopah|38.0602|-117.0872|5430|S|7158|P|US
+KSLC|SLC|Salt Lake City International|40.7884|-111.9778|4227|L|12003|P|US
+KPVU|PVU|Provo Municipal|40.2192|-111.7234|4497|S|8599|P|US
+KCDC|CDC|Cedar City Regional|37.7010|-113.0988|5622|S|8653|P|US
+KSGU|SGU|St. George Regional|37.0364|-113.5103|2941|S|9300|P|US
+KCNY|CNY|Canyonlands Regional|38.7550|-109.7549|4557|S|7360|P|US
+KVEL|VEL|Vernal Regional|40.4409|-109.5099|5278|S|8002|P|US
+KPHX|PHX|Phoenix Sky Harbor International|33.4343|-112.0116|1135|L|11489|P|US
+KDVT|DVT|Phoenix Deer Valley|33.6883|-112.0826|1478|S|8208|P|US
+KFFZ|MSC|Falcon Field|33.4608|-111.7283|1394|S|5101|P|US
+KPRC|PRC|Prescott Regional|34.6545|-112.4196|5045|S|7616|P|US
+KFLG|FLG|Flagstaff Pulliam|35.1385|-111.6712|7014|S|8800|P|US
+KGCN|GCN|Grand Canyon National Park|35.9524|-112.1470|6609|S|8999|P|US
+KIGM|IGM|Kingman|35.2595|-113.9381|3449|S|6827|P|US
+KTUS|TUS|Tucson International|32.1161|-110.9410|2643|L|10996|P|US
+KSOW|SOW|Show Low Regional|34.2655|-110.0054|6415|S|7200|P|US
+KNYL|YUM|Yuma International|32.6566|-114.6060|216|M|13300|P|US
+KABQ|ABQ|Albuquerque International Sunport|35.0402|-106.6091|5355|L|13793|P|US
+KSAF|SAF|Santa Fe Regional|35.6171|-106.0894|6348|S|8366|P|US
+KROW|ROW|Roswell Air Center|33.3016|-104.5306|3671|S|13001|P|US
+KFMN|FMN|Four Corners Regional|36.7412|-108.2299|5506|S|6702|P|US
+KGUP|GUP|Gallup Municipal|35.5111|-108.7894|6472|S|7316|P|US
+KELP|ELP|El Paso International|31.8072|-106.3778|3962|L|12020|P|US
+KDEN|DEN|Denver International|39.8617|-104.6731|5431|L|16000|P|US
+KAPA|APA|Centennial|39.5701|-104.8493|5885|M|10002|P|US
+KBJC|BJC|Rocky Mountain Metropolitan|39.9088|-105.1172|5673|S|9000|P|US
+KCOS|COS|Colorado Springs|38.8058|-104.7008|6187|M|13501|P|US
+KGJT|GJT|Grand Junction Regional|39.1224|-108.5267|4858|M|10501|P|US
+KASE|ASE|Aspen-Pitkin County|39.2232|-106.8688|7820|M|8006|P|US
+KLXV|LXV|Lake County Leadville|39.2203|-106.3167|9934|S|6400|P|US
+KDRO|DRO|Durango-La Plata County|37.1515|-107.7538|6685|S|9201|P|US
+KALS|ALS|San Luis Valley Regional|37.4349|-105.8667|7539|S|8519|P|US
+KCYS|CYS|Cheyenne Regional|41.1557|-104.8118|6159|S|9270|P|US
+KCPR|CPR|Casper-Natrona County|42.9080|-106.4644|5350|M|10165|P|US
+KJAC|JAC|Jackson Hole|43.6073|-110.7377|6451|M|6300|P|US
+KRKS|RKS|Southwest Wyoming Regional|41.5942|-109.0652|6764|S|10000|P|US
+KSHR|SHR|Sheridan County|44.7692|-106.9803|4021|S|8301|P|US
+KRAP|RAP|Rapid City Regional|44.0453|-103.0574|3204|M|8701|P|US
+KBIS|BIS|Bismarck|46.7727|-100.7460|1661|M|8794|P|US
+KMOT|MOT|Minot International|48.2594|-101.2803|1716|M|7700|P|US
+KFAR|FAR|Hector International|46.9207|-96.8158|902|M|9001|P|US
+KFSD|FSD|Sioux Falls Regional|43.5820|-96.7419|1430|M|9000|P|US
+KPIR|PIR|Pierre Regional|44.3827|-100.2859|1744|S|6900|P|US
+KOMA|OMA|Eppley Airfield|41.3032|-95.8941|984|L|9502|P|US
+KLNK|LNK|Lincoln|40.8510|-96.7592|1219|M|12901|P|US
+KLBF|LBF|North Platte Regional|41.1262|-100.6837|2777|S|8001|P|US
+KICT|ICT|Wichita Eisenhower National|37.6499|-97.4331|1333|M|10301|P|US
+KGCK|GCK|Garden City Regional|37.9275|-100.7244|2891|S|7300|P|US
+KHYS|HYS|Hays Regional|38.8422|-99.2732|1999|S|6501|P|US
+KSLN|SLN|Salina Regional|38.7910|-97.6522|1288|S|12300|P|US
+KMCI|MCI|Kansas City International|39.2976|-94.7139|1026|L|10801|P|US
+KMKC|MKC|Charles B. Wheeler Downtown|39.1232|-94.5928|759|M|6827|P|US
+KSTL|STL|St. Louis Lambert International|38.7487|-90.3700|618|L|11019|P|US
+KSUS|SUS|Spirit of St. Louis|38.6621|-90.6520|463|M|7485|P|US
+KSGF|SGF|Springfield-Branson National|37.2457|-93.3886|1268|M|8000|P|US
+KCOU|COU|Columbia Regional|38.8181|-92.2196|889|S|7400|P|US
+KOKC|OKC|Will Rogers World|35.3931|-97.6007|1295|L|9802|P|US
+KTUL|TUL|Tulsa International|36.1984|-95.8881|677|L|10000|P|US
+KAMA|AMA|Rick Husband Amarillo International|35.2194|-101.7059|3607|M|13502|P|US
+KLBB|LBB|Lubbock Preston Smith International|33.6636|-101.8228|3282|M|11500|P|US
+KMAF|MAF|Midland International|31.9425|-102.2019|2871|M|9501|P|US
+KSJT|SJT|San Angelo Regional|31.3577|-100.4963|1919|S|8049|P|US
+KABI|ABI|Abilene Regional|32.4113|-99.6819|1791|S|7208|P|US
+KDFW|DFW|Dallas Fort Worth International|32.8968|-97.0380|607|L|13401|P|US
+KADS|ADS|Addison|32.9686|-96.8364|645|M|7203|P|US
+KACT|ACT|Waco Regional|31.6113|-97.2305|516|S|6597|P|US
+KAUS|AUS|Austin-Bergstrom International|30.1945|-97.6699|542|L|12250|P|US
+KSAT|SAT|San Antonio International|29.5337|-98.4698|809|L|8502|P|US
+KIAH|IAH|George Bush Intercontinental|29.9844|-95.3414|97|L|12001|P|US
+KHOU|HOU|William P. Hobby|29.6454|-95.2789|46|L|7602|P|US
+KCRP|CRP|Corpus Christi International|27.7704|-97.5012|44|M|7510|P|US
+KBRO|BRO|Brownsville South Padre Island International|25.9068|-97.4259|22|M|8000|P|US
+KLRD|LRD|Laredo International|27.5438|-99.4616|508|M|8743|P|US
+KDRT|DRT|Del Rio International|29.3742|-100.9270|1002|S|6300|P|US
+KTYR|TYR|Tyler Pounds Regional|32.3541|-95.4024|544|S|7200|P|US
+KSHV|SHV|Shreveport Regional|32.4466|-93.8256|258|M|8351|P|US
+KMSY|MSY|Louis Armstrong New Orleans International|29.9934|-90.2580|4|L|10104|P|US
+KBTR|BTR|Baton Rouge Metropolitan|30.5332|-91.1496|70|M|7500|P|US
+KLFT|LFT|Lafayette Regional|30.2053|-91.9876|42|M|8001|P|US
+KJAN|JAN|Jackson-Medgar Wiley Evers International|32.3112|-90.0759|346|M|8500|P|US
+KLIT|LIT|Clinton National|34.7294|-92.2243|262|M|8273|P|US
+KXNA|XNA|Northwest Arkansas National|36.2819|-94.3068|1287|M|8800|P|US
+KMEM|MEM|Memphis International|35.0424|-89.9767|341|L|11120|P|US
+KBNA|BNA|Nashville International|36.1245|-86.6782|599|L|11030|P|US
+KBHM|BHM|Birmingham-Shuttlesworth International|33.5629|-86.7535|650|M|12007|P|US
+KHSV|HSV|Huntsville International|34.6372|-86.7751|630|M|12600|P|US
+KMGM|MGM|Montgomery Regional|32.3006|-86.3940|221|M|9020|P|US
+KMOB|MOB|Mobile Regional|30.6912|-88.2428|219|M|8521|P|US
+KATL|ATL|Hartsfield-Jackson Atlanta International|33.6367|-84.4281|1026|L|12390|P|US
+KPDK|PDK|DeKalb-Peachtree|33.8756|-84.3020|1003|M|6001|P|US
+KMCN|MCN|Middle Georgia Regional|32.6928|-83.6492|354|S|6500|P|US
+KSAV|SAV|Savannah Hilton Head International|32.1276|-81.2021|50|M|9351|P|US
+KTLH|TLH|Tallahassee International|30.3965|-84.3503|81|M|8000|P|US
+KPNS|PNS|Pensacola International|30.4734|-87.1866|121|M|8004|P|US
+KJAX|JAX|Jacksonville International|30.4941|-81.6879|30|L|10000|P|US
+KGNV|GNV|Gainesville Regional|29.6900|-82.2718|152|S|7504|P|US
+KORL|ORL|Orlando Executive|28.5455|-81.3329|113|M|6004|P|US
+KMCO|MCO|Orlando International|28.4294|-81.3090|96|L|12005|P|US
+KTPA|TPA|Tampa International|27.9755|-82.5332|26|L|11002|P|US
+KPIE|PIE|St. Pete-Clearwater International|27.9102|-82.6874|11|M|9730|P|US
+KRSW|RSW|Southwest Florida International|26.5362|-81.7552|30|L|12000|P|US
+KFLL|FLL|Fort Lauderdale-Hollywood International|26.0726|-80.1527|9|L|9000|P|US
+KMIA|MIA|Miami International|25.7932|-80.2906|8|L|13016|P|US
+KTMB|TMB|Miami Executive|25.6479|-80.4328|8|M|6000|P|US
+KMTH|MTH|Florida Keys Marathon International|24.7261|-81.0514|5|S|5008|P|US
+KEYW|EYW|Key West International|24.5561|-81.7596|3|M|4801|P|US
+KCHS|CHS|Charleston International|32.8986|-80.0405|46|L|9001|P|US
+KMYR|MYR|Myrtle Beach International|33.6797|-78.9283|25|M|9503|P|US
+KCAE|CAE|Columbia Metropolitan|33.9388|-81.1195|236|M|8601|P|US
+KGSP|GSP|Greenville-Spartanburg International|34.8957|-82.2189|964|M|11001|P|US
+KCLT|CLT|Charlotte Douglas International|35.2140|-80.9431|748|L|10000|P|US
+KRDU|RDU|Raleigh-Durham International|35.8776|-78.7875|435|L|10000|P|US
+KILM|ILM|Wilmington International|34.2706|-77.9026|32|M|8016|P|US
+KEWN|EWN|Coastal Carolina Regional|35.0730|-77.0429|18|S|6004|P|US
+KGSO|GSO|Piedmont Triad International|36.0978|-79.9373|925|M|10001|P|US
+KAVL|AVL|Asheville Regional|35.4362|-82.5418|2165|M|8001|P|US
+KTYS|TYS|McGhee Tyson|35.8110|-83.9940|981|M|9008|P|US
+KTRI|TRI|Tri-Cities Regional|36.4752|-82.4074|1519|M|8000|P|US
+KCHA|CHA|Chattanooga Metropolitan|35.0353|-85.2038|683|M|7400|P|US
+KSDF|SDF|Louisville Muhammad Ali International|38.1744|-85.7360|501|L|11890|P|US
+KLEX|LEX|Blue Grass|38.0365|-84.6059|979|M|7004|P|US
+KPAH|PAH|Barkley Regional|37.0608|-88.7738|410|S|6499|P|US
+KCVG|CVG|Cincinnati Northern Kentucky International|39.0488|-84.6678|896|L|12000|P|US
+KCMH|CMH|John Glenn Columbus International|39.9980|-82.8919|815|L|10113|P|US
+KDAY|DAY|Dayton International|39.9024|-84.2194|1009|M|10900|P|US
+KCLE|CLE|Cleveland Hopkins International|41.4117|-81.8498|791|L|10000|P|US
+KCAK|CAK|Akron-Canton|40.9161|-81.4422|1228|M|8204|P|US
+KTOL|TOL|Toledo Express|41.5868|-83.8078|683|M|10599|P|US
+KDTW|DTW|Detroit Metropolitan Wayne County|42.2124|-83.3534|645|L|12003|P|US
+KPTK|PTK|Oakland County International|42.6655|-83.4185|980|M|6521|P|US
+KLAN|LAN|Capital Region International|42.7787|-84.5874|861|M|8506|P|US
+KGRR|GRR|Gerald R. Ford International|42.8808|-85.5228|794|M|10000|P|US
+KTVC|TVC|Cherry Capital|44.7414|-85.5822|624|M|6501|P|US
+KAPN|APN|Alpena County Regional|45.0781|-83.5603|690|S|9001|P|US
+KMQT|SAW|Sawyer International|46.3536|-87.3954|1221|M|9072|P|US
+KMKE|MKE|Milwaukee Mitchell International|42.9472|-87.8966|723|L|9690|P|US
+KMSN|MSN|Dane County Regional|43.1399|-89.3375|887|M|9006|P|US
+KOSH|OSH|Wittman Regional|43.9844|-88.5570|808|M|8002|P|US
+KGRB|GRB|Green Bay Austin Straubel International|44.4851|-88.1296|695|M|8700|P|US
+KAUW|AUW|Wausau Downtown|44.9262|-89.6270|1201|S|5200|P|US
+KEAU|EAU|Chippewa Valley Regional|44.8658|-91.4843|913|S|8101|P|US
+KORD|ORD|Chicago O'Hare International|41.9786|-87.9048|672|L|13000|P|US
+KMDW|MDW|Chicago Midway International|41.7868|-87.7522|620|L|6522|P|US
+KDPA|DPA|DuPage|41.9078|-88.2486|759|M|7571|P|US
+KRFD|RFD|Chicago Rockford International|42.1954|-89.0972|742|M|10002|P|US
+KPIA|PIA|Peoria International|40.6642|-89.6933|660|M|10104|P|US
+KSPI|SPI|Abraham Lincoln Capital|39.8441|-89.6779|598|M|8001|P|US
+KCMI|CMI|University of Illinois Willard|40.0392|-88.2781|755|S|8102|P|US
+KMWA|MWA|Veterans Airport of Southern Illinois|37.7550|-89.0111|472|S|8012|P|US
+KIND|IND|Indianapolis International|39.7173|-86.2944|797|L|11200|P|US
+KFWA|FWA|Fort Wayne International|40.9785|-85.1951|815|M|12000|P|US
+KLAF|LAF|Purdue University|40.4123|-86.9369|606|S|6600|P|US
+KEVV|EVV|Evansville Regional|38.0370|-87.5324|418|M|8021|P|US
+KMSP|MSP|Minneapolis-Saint Paul International|44.8820|-93.2218|841|L|11006|P|US
+KFCM|FCM|Flying Cloud|44.8272|-93.4571|906|M|3909|P|US
+KSTC|STC|St. Cloud Regional|45.5466|-94.0599|1031|S|7000|P|US
+KBRD|BRD|Brainerd Lakes Regional|46.3983|-94.1381|1232|S|7100|P|US
+KDLH|DLH|Duluth International|46.8421|-92.1936|1428|M|10162|P|US
+KINL|INL|Falls International|48.5662|-93.4031|1185|S|7400|P|US
+KBJI|BJI|Bemidji Regional|47.5094|-94.9337|1391|S|6598|P|US
+KRST|RST|Rochester International|43.9083|-92.5000|1317|M|9033|P|US
+KDSM|DSM|Des Moines International|41.5340|-93.6631|958|M|9003|P|US
+KCID|CID|The Eastern Iowa|41.8847|-91.7108|869|M|8600|P|US
+KALO|ALO|Waterloo Regional|42.5571|-92.4003|873|S|8401|P|US
+KSUX|SUX|Sioux Gateway|42.4026|-96.3844|1098|M|9002|P|US
+KPIT|PIT|Pittsburgh International|40.4915|-80.2329|1203|L|11500|P|US
+KAGC|AGC|Allegheny County|40.3544|-79.9302|1252|M|6501|P|US
+KERI|ERI|Erie International|42.0831|-80.1739|732|M|8420|P|US
+KIAD|IAD|Washington Dulles International|38.9445|-77.4558|313|L|11500|P|US
+KDCA|DCA|Ronald Reagan Washington National|38.8521|-77.0377|15|L|7169|P|US
+KBWI|BWI|Baltimore Washington International|39.1754|-76.6683|146|L|11050|P|US
+KFDK|FDK|Frederick Municipal|39.4176|-77.3743|303|S|5220|P|US
+KSBY|SBY|Salisbury-Ocean City Wicomico Regional|38.3405|-75.5103|52|S|6400|P|US
+KRIC|RIC|Richmond International|37.5052|-77.3197|167|M|9003|P|US
+KORF|ORF|Norfolk International|36.8946|-76.2012|26|M|9001|P|US
+KCHO|CHO|Charlottesville-Albemarle|38.1386|-78.4529|639|S|6801|P|US
+KROA|ROA|Roanoke-Blacksburg Regional|37.3255|-79.9754|1175|M|6800|P|US
+KCRW|CRW|West Virginia International Yeager|38.3731|-81.5932|981|M|6802|P|US
+KPHL|PHL|Philadelphia International|39.8719|-75.2411|36|L|12000|P|US
+KPNE|PNE|Northeast Philadelphia|40.0819|-75.0106|120|M|7000|P|US
+KABE|ABE|Lehigh Valley International|40.6521|-75.4408|393|M|7600|P|US
+KMDT|MDT|Harrisburg International|40.1935|-76.7634|310|M|10001|P|US
+KUNV|SCE|University Park|40.8493|-77.8487|1239|S|6701|P|US
+KAVP|AVP|Wilkes-Barre Scranton International|41.3385|-75.7234|962|M|7501|P|US
+KACY|ACY|Atlantic City International|39.4576|-74.5772|75|M|10000|P|US
+KEWR|EWR|Newark Liberty International|40.6925|-74.1687|18|L|11000|P|US
+KTEB|TEB|Teterboro|40.8501|-74.0608|9|M|7000|P|US
+KCDW|CDW|Essex County|40.8752|-74.2814|173|S|4553|P|US
+KJFK|JFK|John F. Kennedy International|40.6398|-73.7789|13|L|14511|P|US
+KLGA|LGA|LaGuardia|40.7772|-73.8726|21|L|7003|P|US
+KFRG|FRG|Republic|40.7288|-73.4134|82|M|6833|P|US
+KISP|ISP|Long Island MacArthur|40.7952|-73.1002|99|M|7006|P|US
+KHPN|HPN|Westchester County|41.0670|-73.7076|439|M|6549|P|US
+KSWF|SWF|New York Stewart International|41.5041|-74.1048|491|M|11818|P|US
+KALB|ALB|Albany International|42.7483|-73.8017|285|M|8500|P|US
+KSYR|SYR|Syracuse Hancock International|43.1112|-76.1063|421|M|9003|P|US
+KROC|ROC|Greater Rochester International|43.1189|-77.6724|559|M|8001|P|US
+KBUF|BUF|Buffalo Niagara International|42.9405|-78.7322|728|L|8829|P|US
+KELM|ELM|Elmira Corning Regional|42.1599|-76.8916|954|S|7000|P|US
+KART|ART|Watertown International|43.9919|-76.0217|325|S|7000|P|US
+KPBG|PBG|Plattsburgh International|44.6509|-73.4681|234|M|11759|P|US
+KBDL|BDL|Bradley International|41.9389|-72.6832|173|L|9510|P|US
+KHVN|HVN|Tweed New Haven|41.2637|-72.8868|12|S|5600|P|US
+KPVD|PVD|Rhode Island T. F. Green International|41.7240|-71.4282|55|M|8700|P|US
+KBOS|BOS|Boston Logan International|42.3656|-71.0096|20|L|10083|P|US
+KBED|BED|Laurence G. Hanscom Field|42.4700|-71.2890|133|M|7011|P|US
+KORH|ORH|Worcester Regional|42.2673|-71.8757|1009|M|7001|P|US
+KACK|ACK|Nantucket Memorial|41.2531|-70.0602|47|M|6303|P|US
+KHYA|HYA|Cape Cod Gateway|41.6693|-70.2804|54|M|5425|P|US
+KMVY|MVY|Martha's Vineyard|41.3931|-70.6143|67|M|5504|P|US
+KMHT|MHT|Manchester-Boston Regional|42.9326|-71.4357|266|M|9250|P|US
+KLEB|LEB|Lebanon Municipal|43.6261|-72.3042|603|S|5496|P|US
+KBTV|BTV|Patrick Leahy Burlington International|44.4719|-73.1533|335|M|8320|P|US
+KPWM|PWM|Portland International Jetport|43.6462|-70.3093|76|M|7200|P|US
+KAUG|AUG|Augusta State|44.3206|-69.7973|352|S|5001|P|US
+KBGR|BGR|Bangor International|44.8074|-68.8281|192|M|11440|P|US
+KBHB|BHB|Hancock County-Bar Harbor|44.4497|-68.3616|83|S|5200|P|US
+KPQI|PQI|Presque Isle International|46.6890|-68.0448|534|S|7440|P|US
+PANC|ANC|Ted Stevens Anchorage International|61.1744|-149.9964|152|L|12400|P|US
+PAMR|MRI|Merrill Field|61.2135|-149.8440|137|S|4000|P|US
+PALH|LHD|Lake Hood Seaplane Base|61.1802|-149.9721|71|W|4540|W|US
+PAFA|FAI|Fairbanks International|64.8151|-147.8561|439|L|11800|P|US
+PAJN|JNU|Juneau International|58.3550|-134.5763|25|M|8857|P|US
+PAKT|KTN|Ketchikan International|55.3556|-131.7137|89|M|7500|P|US
+PASI|SIT|Sitka Rocky Gutierrez|57.0471|-135.3616|21|M|6500|P|US
+PAYA|YAK|Yakutat|59.5033|-139.6602|33|M|7745|P|US
+PACV|CDV|Merle K. Mudhole Smith|60.4918|-145.4776|54|S|7500|P|US
+PAVD|VDZ|Valdez Pioneer Field|61.1339|-146.2483|121|S|6500|P|US
+PAGK|GKN|Gulkana|62.1549|-145.4566|1586|S|5000|P|US
+PATK|TKA|Talkeetna|62.3205|-150.0937|358|S|3500|P|US
+PAEN|ENA|Kenai Municipal|60.5731|-151.2450|99|M|7855|P|US
+PAHO|HOM|Homer|59.6456|-151.4766|84|M|6701|P|US
+PADQ|ADQ|Kodiak|57.7500|-152.4939|78|M|7542|P|US
+PAKN|AKN|King Salmon|58.6768|-156.6492|73|M|8901|P|US
+PADL|DLG|Dillingham|59.0447|-158.5050|81|S|6400|P|US
+PABE|BET|Bethel|60.7798|-161.8380|126|M|6400|P|US
+PAMC|MCG|McGrath|62.9529|-155.6060|341|S|5936|P|US
+PAGA|GAL|Edward G. Pitka Sr|64.7362|-156.9370|152|S|7254|P|US
+PAUN|UNK|Unalakleet|63.8884|-160.7990|27|S|6004|U|US
+PAOM|OME|Nome|64.5122|-165.4453|37|M|6001|P|US
+PAOT|OTZ|Ralph Wien Memorial|66.8847|-162.5985|14|M|5900|P|US
+PABT|BTT|Bettles|66.9139|-151.5291|647|S|5190|U|US
+PABR|BRW|Wiley Post-Will Rogers Memorial|71.2854|-156.7660|44|M|6500|P|US
+PACD|CDB|Cold Bay|55.2061|-162.7250|101|M|10180|P|US
+PADU|DUT|Unalaska|53.8998|-166.5440|22|S|4500|P|US
+PHNL|HNL|Daniel K. Inouye International|21.3187|-157.9225|13|L|12312|P|US
+PHJR|JRF|Kalaeloa|21.3074|-158.0703|30|S|6000|P|US
+PHOG|OGG|Kahului|20.8986|-156.4305|54|L|6995|P|US
+PHKO|KOA|Ellison Onizuka Kona International|19.7388|-156.0456|47|M|11000|P|US
+PHTO|ITO|Hilo International|19.7214|-155.0485|38|M|9800|P|US
+PHLI|LIH|Lihue|21.9760|-159.3390|153|M|6500|P|US
+PHMK|MKK|Molokai|21.1529|-157.0960|454|S|4494|P|US
+CYVR|YVR|Vancouver International|49.1939|-123.1844|14|L|11500|P|CA
+CYXX|YXX|Abbotsford International|49.0253|-122.3608|195|M|9597|P|CA
+CYYJ|YYJ|Victoria International|48.6469|-123.4258|63|M|7000|P|CA
+CYCD|YCD|Nanaimo|49.0550|-123.8700|92|S|6602|P|CA
+CYKA|YKA|Kamloops|50.7022|-120.4440|1133|M|8000|P|CA
+CYLW|YLW|Kelowna International|49.9561|-119.3778|1421|M|8900|P|CA
+CYXS|YXS|Prince George|53.8894|-122.6789|2267|M|11450|P|CA
+CYXT|YXT|Northwest Regional Terrace-Kitimat|54.4685|-128.5762|713|S|7497|P|CA
+CYPR|YPR|Prince Rupert|54.2861|-130.4447|116|S|6000|P|CA
+CYXJ|YXJ|Fort St. John|56.2381|-120.7400|2280|M|6900|P|CA
+CYYC|YYC|Calgary International|51.1225|-114.0133|3557|L|14000|P|CA
+CYEG|YEG|Edmonton International|53.3097|-113.5797|2373|L|11000|P|CA
+CYQL|YQL|Lethbridge|49.6303|-112.8000|3048|S|6500|P|CA
+CYMM|YMM|Fort McMurray International|56.6533|-111.2222|1211|M|7503|P|CA
+CYQU|YQU|Grande Prairie|55.1797|-118.8850|2195|M|6500|P|CA
+CYQR|YQR|Regina International|50.4319|-104.6658|1894|M|7900|P|CA
+CYXE|YXE|Saskatoon John G. Diefenbaker International|52.1708|-106.6997|1653|M|8300|P|CA
+CYWG|YWG|Winnipeg James Armstrong Richardson International|49.9100|-97.2399|783|L|11000|P|CA
+CYQT|YQT|Thunder Bay International|48.3719|-89.3239|653|M|7318|P|CA
+CYAM|YAM|Sault Ste. Marie|46.4850|-84.5094|630|S|6000|P|CA
+CYSB|YSB|Greater Sudbury|46.6250|-80.7989|1141|S|6600|P|CA
+CYTS|YTS|Timmins Victor M. Power|48.5697|-81.3767|967|S|6000|P|CA
+CYYZ|YYZ|Toronto Pearson International|43.6772|-79.6306|569|L|11120|P|CA
+CYTZ|YTZ|Billy Bishop Toronto City|43.6275|-79.3962|252|M|3988|P|CA
+CYKF|YKF|Region of Waterloo International|43.4608|-80.3786|1055|S|7003|P|CA
+CYXU|YXU|London International|43.0356|-81.1539|912|M|8800|P|CA
+CYOW|YOW|Ottawa Macdonald-Cartier International|45.3225|-75.6692|374|L|10000|P|CA
+CYUL|YUL|Montreal-Trudeau International|45.4706|-73.7408|118|L|11000|P|CA
+CYQB|YQB|Quebec City Jean Lesage International|46.7911|-71.3933|244|M|9000|P|CA
+CYBG|YBG|Bagotville|48.3306|-70.9964|522|M|10000|P|CA
+CYYY|YYY|Mont-Joli|48.6086|-68.2081|172|S|6000|P|CA
+CYQM|YQM|Greater Moncton International|46.1122|-64.6786|232|M|10000|P|CA
+CYFC|YFC|Fredericton International|45.8689|-66.5372|68|M|8005|P|CA
+CYHZ|YHZ|Halifax Stanfield International|44.8808|-63.5086|477|L|10500|P|CA
+CYYG|YYG|Charlottetown|46.2900|-63.1211|160|M|7000|P|CA
+CYQY|YQY|J.A. Douglas McCurdy Sydney|46.1614|-60.0478|203|S|7070|P|CA
+CYDF|YDF|Deer Lake Regional|49.2108|-57.3914|72|M|8005|P|CA
+CYQX|YQX|Gander International|48.9369|-54.5681|496|M|10200|P|CA
+CYYT|YYT|St. John's International|47.6186|-52.7519|461|M|8502|P|CA
+CYYR|YYR|Goose Bay|53.3192|-60.4258|160|M|11046|P|CA
+CYZF|YZF|Yellowknife|62.4628|-114.4403|675|M|7500|P|CA
+CYXY|YXY|Erik Nielsen Whitehorse International|60.7096|-135.0670|2317|M|9497|P|CA
+CYFB|YFB|Iqaluit|63.7564|-68.5558|110|M|8605|P|CA
+MMTJ|TIJ|Tijuana International|32.5411|-116.9700|489|L|9711|P|MX
+MMML|MXL|Mexicali International|32.6306|-115.2414|74|M|8530|P|MX
+MMHO|HMO|Hermosillo International|29.0959|-111.0480|627|M|7546|P|MX
+MMLP|LAP|La Paz International|24.0727|-110.3620|69|M|8202|P|MX
+MMSD|SJD|Los Cabos International|23.1518|-109.7210|374|L|9842|P|MX
+MMCU|CUU|Chihuahua International|28.7029|-105.9640|4462|M|8530|P|MX
+MMMY|MTY|Monterrey International|25.7785|-100.1070|1278|L|9843|P|MX
+MMMZ|MZT|Mazatlan International|23.1614|-106.2660|38|M|8858|P|MX
+MMGL|GDL|Guadalajara International|20.5218|-103.3110|5016|L|13123|P|MX
+MMPR|PVR|Puerto Vallarta International|20.6801|-105.2540|23|L|10171|P|MX
+MMMX|MEX|Mexico City International|19.4363|-99.0721|7316|L|12966|P|MX
+MMAA|ACA|Acapulco International|16.7571|-99.7540|16|M|10827|P|MX
+MMOX|OAX|Oaxaca International|16.9999|-96.7266|4989|M|8136|P|MX
+MMMD|MID|Merida International|20.9370|-89.6577|38|L|10499|P|MX
+MMUN|CUN|Cancun International|21.0365|-86.8771|22|L|11483|P|MX
+MGGT|GUA|La Aurora International|14.5833|-90.5275|4952|L|9800|P|GT
+MSLP|SAL|El Salvador International|13.4409|-89.0557|101|L|10500|P|SV
+MHTG|TGU|Toncontin International|14.0609|-87.2172|3294|M|7096|P|HN
+MNMG|MGA|Augusto C. Sandino International|12.1415|-86.1682|194|M|8012|P|NI
+MROC|SJO|Juan Santamaria International|9.9939|-84.2088|3021|L|9882|P|CR
+MPTO|PTY|Tocumen International|9.0714|-79.3835|135|L|10006|P|PA
+MYNN|NAS|Lynden Pindling International|25.0390|-77.4662|16|L|11000|P|BS
+MUHA|HAV|Jose Marti International|22.9892|-82.4091|210|L|13123|P|CU
+MKJP|KIN|Norman Manley International|17.9357|-76.7875|10|L|8911|P|JM
+MDSD|SDQ|Las Americas International|18.4297|-69.6689|59|L|11002|P|DO
+TJSJ|SJU|Luis Munoz Marin International|18.4394|-66.0018|9|L|10400|P|PR
+TNCM|SXM|Princess Juliana International|18.0410|-63.1089|13|M|7546|P|SX
+TFFR|PTP|Pointe-a-Pitre International|16.2653|-61.5318|36|L|11499|P|GP
+TBPB|BGI|Grantley Adams International|13.0746|-59.4925|169|L|11017|P|BB
+TTPP|POS|Piarco International|10.5954|-61.3372|58|L|10500|P|TT
+TXKF|BDA|L.F. Wade International|32.3640|-64.6787|12|L|9713|P|BM
+SKBO|BOG|El Dorado International|4.7016|-74.1469|8361|L|12467|P|CO
+SKRG|MDE|Jose Maria Cordova International|6.1645|-75.4231|6955|L|11483|P|CO
+SKCG|CTG|Rafael Nunez International|10.4424|-75.5130|4|L|8530|P|CO
+SVMI|CCS|Simon Bolivar International|10.6031|-66.9906|235|L|11483|P|VE
+SYCJ|GEO|Cheddi Jagan International|6.4985|-58.2541|95|M|7448|P|GY
+SMJP|PBM|Johan Adolf Pengel International|5.4528|-55.1878|59|M|11417|P|SR
+SOCA|CAY|Cayenne Felix Eboue|4.8198|-52.3604|26|M|10499|P|GF
+SEQM|UIO|Mariscal Sucre International|-0.1292|-78.3575|7841|L|13451|P|EC
+SEGU|GYE|Jose Joaquin de Olmedo International|-2.1574|-79.8836|19|L|9154|P|EC
+SEST|GPS|Seymour Baltra|-0.4538|-90.2659|207|M|7874|P|EC
+SPJC|LIM|Jorge Chavez International|-12.0219|-77.1143|113|L|11506|P|PE
+SPZO|CUZ|Alejandro Velasco Astete International|-13.5357|-71.9388|10860|M|11146|P|PE
+SLLP|LPB|El Alto International|-16.5133|-68.1923|13325|L|13123|P|BO
+SCFA|ANF|Andres Sabella Galvez International|-23.4445|-70.4451|455|M|8530|P|CL
+SCEL|SCL|Arturo Merino Benitez International|-33.3930|-70.7858|1555|L|12303|P|CL
+SCTE|PMC|El Tepual|-41.4389|-73.0940|294|M|8694|P|CL
+SCCI|PUQ|Presidente Carlos Ibanez del Campo International|-53.0026|-70.8546|139|M|9154|P|CL
+SCIP|IPC|Mataveri International|-27.1648|-109.4219|227|M|10827|P|CL
+SAEZ|EZE|Ministro Pistarini International|-34.8222|-58.5358|67|L|10827|P|AR
+SABE|AEP|Aeroparque Jorge Newbery|-34.5592|-58.4156|18|L|8858|P|AR
+SACO|COR|Ingeniero Ambrosio Taravella International|-31.3236|-64.2080|1604|L|10499|P|AR
+SAME|MDZ|Governor Francisco Gabrielli International|-32.8317|-68.7929|2310|M|9301|P|AR
+SAZS|BRC|San Carlos de Bariloche|-41.1512|-71.1575|2774|M|7710|P|AR
+SAVC|CRD|General Enrique Mosconi International|-45.7853|-67.4655|189|M|9186|P|AR
+SAWH|USH|Malvinas Argentinas International Ushuaia|-54.8433|-68.2958|102|M|9186|P|AR
+SUMU|MVD|Carrasco International|-34.8384|-56.0308|105|L|10499|P|UY
+SGAS|ASU|Silvio Pettirossi International|-25.2400|-57.5200|292|L|11001|P|PY
+SBGR|GRU|Sao Paulo Guarulhos International|-23.4356|-46.4731|2459|L|12139|P|BR
+SBSP|CGH|Congonhas|-23.6261|-46.6564|2631|L|6365|P|BR
+SBGL|GIG|Rio de Janeiro Galeao International|-22.8100|-43.2506|28|L|13123|P|BR
+SBBR|BSB|Brasilia International|-15.8697|-47.9208|3497|L|10827|P|BR
+SBCF|CNF|Belo Horizonte Confins International|-19.6244|-43.9719|2715|L|9843|P|BR
+SBPA|POA|Salgado Filho International|-29.9944|-51.1714|11|L|10499|P|BR
+SBCT|CWB|Afonso Pena International|-25.5285|-49.1758|2988|L|7267|P|BR
+SBSV|SSA|Salvador International|-12.9086|-38.3225|64|L|9865|P|BR
+SBRF|REC|Recife Guararapes International|-8.1265|-34.9236|33|L|9852|P|BR
+SBFZ|FOR|Fortaleza International|-3.7763|-38.5326|82|L|8858|P|BR
+SBBE|BEL|Belem Val de Cans International|-1.3792|-48.4763|54|L|9186|P|BR
+SBEG|MAO|Eduardo Gomes International|-3.0386|-60.0497|264|L|8858|P|BR
+SBCY|CGB|Marechal Rondon International|-15.6529|-56.1167|617|M|7546|P|BR
+EGLL|LHR|London Heathrow|51.4706|-0.4619|83|L|12802|P|GB
+EGKK|LGW|London Gatwick|51.1481|-0.1903|202|L|10879|P|GB
+EGSS|STN|London Stansted|51.8850|0.2350|348|L|10003|P|GB
+EGLC|LCY|London City|51.5053|0.0553|19|M|4948|P|GB
+EGLM||White Waltham|51.5003|-0.7744|131|S|3582|U|GB
+EGTK|OXF|Oxford|51.8369|-1.3200|270|S|5092|P|GB
+EGBB|BHX|Birmingham|52.4539|-1.7480|327|L|10013|P|GB
+EGCC|MAN|Manchester|53.3537|-2.2750|257|L|10007|P|GB
+EGNM|LBA|Leeds Bradford|53.8659|-1.6606|681|M|7382|P|GB
+EGNT|NCL|Newcastle|55.0375|-1.6917|266|L|7641|P|GB
+EGPH|EDI|Edinburgh|55.9500|-3.3725|135|L|8386|P|GB
+EGPF|GLA|Glasgow|55.8719|-4.4331|26|L|8743|P|GB
+EGPD|ABZ|Aberdeen|57.2019|-2.1978|215|M|6407|P|GB
+EGPE|INV|Inverness|57.5425|-4.0475|31|M|6191|P|GB
+EGPO|SYY|Stornoway|58.2156|-6.3311|26|M|7218|P|GB
+EGPA|KOI|Kirkwall|58.9578|-2.9050|50|S|4685|P|GB
+EGPB|LSI|Sumburgh|59.8789|-1.2956|20|M|4678|P|GB
+EGHH|BOH|Bournemouth|50.7800|-1.8425|38|M|7451|P|GB
+EGGD|BRS|Bristol|51.3827|-2.7191|622|L|6598|P|GB
+EGFF|CWL|Cardiff|51.3967|-3.3433|220|M|7848|P|GB
+EGHQ|NQY|Newquay Cornwall|50.4406|-4.9954|390|M|9006|P|GB
+EGAA|BFS|Belfast International|54.6575|-6.2158|268|L|9121|P|GB
+EGJJ|JER|Jersey|49.2079|-2.1955|277|M|5597|P|JE
+EIDW|DUB|Dublin|53.4213|-6.2701|242|L|10200|P|IE
+EINN|SNN|Shannon|52.7020|-8.9248|46|L|10495|P|IE
+EICK|ORK|Cork|51.8413|-8.4911|502|M|6998|P|IE
+LFPG|CDG|Paris Charles de Gaulle|49.0097|2.5479|392|L|13829|P|FR
+LFPB|LBG|Paris-Le Bourget|48.9694|2.4414|218|M|9843|P|FR
+LFPN|TNF|Toussus-le-Noble|48.7519|2.1061|538|S|3609|P|FR
+LFOB|BVA|Beauvais-Tille|49.4544|2.1128|359|M|7972|P|FR
+LFRN|RNS|Rennes-Saint-Jacques|48.0695|-1.7348|124|M|6890|P|FR
+LFRS|NTE|Nantes Atlantique|47.1532|-1.6107|90|L|9514|P|FR
+LFBD|BOD|Bordeaux-Merignac|44.8283|-0.7156|166|L|10171|P|FR
+LFBO|TLS|Toulouse-Blagnac|43.6291|1.3638|499|L|11483|P|FR
+LFML|MRS|Marseille Provence|43.4393|5.2214|74|L|11483|P|FR
+LFMN|NCE|Nice Cote d'Azur|43.6584|7.2159|12|L|9711|P|FR
+LFLL|LYS|Lyon-Saint-Exupery|45.7256|5.0811|821|L|13123|P|FR
+LFLB|CMF|Chambery Savoie Mont Blanc|45.6381|5.8803|779|M|6634|P|FR
+LFST|SXB|Strasbourg|48.5383|7.6282|505|M|7874|P|FR
+LFSB|BSL|EuroAirport Basel Mulhouse Freiburg|47.5896|7.5299|885|L|12795|P|FR
+LFKJ|AJA|Ajaccio Napoleon Bonaparte|41.9236|8.8029|18|M|7897|P|FR
+LSZH|ZRH|Zurich|47.4647|8.5492|1416|L|12139|P|CH
+LSGG|GVA|Geneva|46.2381|6.1090|1411|L|12795|P|CH
+LSZB|BRN|Bern|46.9141|7.4971|1674|M|5735|P|CH
+EDDF|FRA|Frankfurt|50.0333|8.5706|364|L|13123|P|DE
+EDFE||Frankfurt-Egelsbach|49.9608|8.6436|384|S|4593|P|DE
+EDDM|MUC|Munich|48.3538|11.7861|1487|L|13123|P|DE
+EDMA|AGB|Augsburg|48.4252|10.9317|1516|S|5249|P|DE
+EDNY|FDH|Friedrichshafen|47.6713|9.5115|1367|M|7729|P|DE
+EDDS|STR|Stuttgart|48.6899|9.2220|1276|L|10974|P|DE
+EDDN|NUE|Nuremberg|49.4987|11.0781|1046|L|8858|P|DE
+EDDB|BER|Berlin Brandenburg|52.3667|13.5033|157|L|13123|P|DE
+EDDP|LEJ|Leipzig Halle|51.4239|12.2364|465|L|11811|P|DE
+EDDH|HAM|Hamburg|53.6304|9.9882|53|L|12028|P|DE
+EDDV|HAJ|Hannover|52.4611|9.6850|183|L|12467|P|DE
+EDDL|DUS|Dusseldorf|51.2895|6.7668|147|L|9842|P|DE
+EDDK|CGN|Cologne Bonn|50.8659|7.1427|302|L|12516|P|DE
+EHAM|AMS|Amsterdam Schiphol|52.3086|4.7639|-11|L|12467|P|NL
+EHLE|LEY|Lelystad|52.4603|5.5272|-13|M|8858|P|NL
+EHRD|RTM|Rotterdam The Hague|51.9569|4.4372|-15|M|7218|P|NL
+EBBR|BRU|Brussels|50.9014|4.4844|184|L|11936|P|BE
+EBAW|ANR|Antwerp International|51.1894|4.4603|39|S|4954|P|BE
+ELLX|LUX|Luxembourg|49.6233|6.2044|1234|L|13123|P|LU
+EKCH|CPH|Copenhagen|55.6179|12.6560|17|L|11811|P|DK
+EKRK|RKE|Copenhagen Roskilde|55.5856|12.1314|146|S|5873|P|DK
+EKBI|BLL|Billund|55.7403|9.1518|247|L|10171|P|DK
+EKVG|FAE|Vagar|62.0636|-7.2772|280|M|5902|P|FO
+ESSA|ARN|Stockholm Arlanda|59.6519|17.9186|137|L|10830|P|SE
+ESSB|BMA|Stockholm Bromma|59.3544|17.9417|47|M|5472|P|SE
+ESGG|GOT|Goteborg Landvetter|57.6628|12.2798|506|L|10823|P|SE
+ESMS|MMX|Malmo|55.5363|13.3762|236|M|9186|P|SE
+ESNU|UME|Umea|63.7918|20.2828|24|M|7546|P|SE
+ESPA|LLA|Lulea|65.5438|22.1220|65|M|10990|P|SE
+ESNZ|OSD|Are Ostersund|63.1944|14.5003|1233|M|8202|P|SE
+ENGM|OSL|Oslo Gardermoen|60.1939|11.1004|681|L|11811|P|NO
+ENBR|BGO|Bergen Flesland|60.2934|5.2181|170|L|9810|P|NO
+ENZV|SVG|Stavanger Sola|58.8767|5.6378|29|L|8383|P|NO
+ENVA|TRD|Trondheim Vaernes|63.4578|10.9240|56|L|9052|P|NO
+ENBO|BOO|Bodo|67.2692|14.3653|42|L|9134|P|NO
+ENTC|TOS|Tromso|69.6833|18.9189|31|L|7848|P|NO
+ENKR|KKN|Kirkenes Hoybuktmoen|69.7258|29.8913|283|M|6923|P|NO
+ENSB|LYR|Svalbard Longyear|78.2461|15.4656|88|M|7608|P|NO
+EFHK|HEL|Helsinki-Vantaa|60.3172|24.9633|179|L|11286|P|FI
+EFTU|TKU|Turku|60.5141|22.2628|161|M|8203|P|FI
+EFKU|KUO|Kuopio|63.0071|27.7978|323|M|9186|P|FI
+EFOU|OUL|Oulu|64.9301|25.3546|47|M|8202|P|FI
+EFRO|RVN|Rovaniemi|66.5648|25.8304|642|M|9849|P|FI
+EETN|TLL|Tallinn|59.4133|24.8328|131|L|11417|P|EE
+EVRA|RIX|Riga International|56.9236|23.9711|36|L|10498|P|LV
+EYVI|VNO|Vilnius|54.6341|25.2858|646|L|8251|P|LT
+EPWA|WAW|Warsaw Chopin|52.1657|20.9671|362|L|12106|P|PL
+EPGD|GDN|Gdansk Lech Walesa|54.3776|18.4662|489|L|9186|P|PL
+EPKK|KRK|Krakow John Paul II|50.0777|19.7848|791|L|8366|P|PL
+EPWR|WRO|Wroclaw|51.1027|16.8858|404|M|8202|P|PL
+EPPO|POZ|Poznan-Lawica|52.4210|16.8263|308|M|8209|P|PL
+LKPR|PRG|Prague Vaclav Havel|50.1008|14.2600|1247|L|12191|P|CZ
+LKTB|BRQ|Brno-Turany|49.1513|16.6944|778|M|8694|P|CZ
+LOWW|VIE|Vienna|48.1103|16.5697|600|L|11811|P|AT
+LOWS|SZG|Salzburg|47.7933|13.0043|1411|M|9022|P|AT
+LOWI|INN|Innsbruck|47.2602|11.3440|1907|M|6562|P|AT
+LOWG|GRZ|Graz|46.9911|15.4396|1115|M|9842|P|AT
+LHBP|BUD|Budapest Ferenc Liszt|47.4298|19.2611|495|L|12162|P|HU
+LZIB|BTS|Bratislava|48.1702|17.2127|436|L|10476|P|SK
+LJLJ|LJU|Ljubljana Joze Pucnik|46.2237|14.4576|1273|M|10827|P|SI
+LDZA|ZAG|Zagreb|45.7429|16.0688|353|L|10663|P|HR
+LDSP|SPU|Split|43.5389|16.2980|79|M|8366|P|HR
+LDDU|DBV|Dubrovnik|42.5614|18.2682|527|M|10827|P|HR
+LYBE|BEG|Belgrade Nikola Tesla|44.8184|20.3091|335|L|11155|P|RS
+LQSA|SJJ|Sarajevo|43.8246|18.3315|1708|M|8530|P|BA
+LROP|OTP|Bucharest Henri Coanda|44.5711|26.0850|314|L|11483|P|RO
+LRCL|CLJ|Cluj|46.7852|23.6862|1036|M|11483|P|RO
+LBSF|SOF|Sofia|42.6952|23.4062|1742|L|11811|P|BG
+LBBG|BOJ|Burgas|42.5696|27.5152|135|M|10499|P|BG
+LGAV|ATH|Athens International|37.9364|23.9445|308|L|13123|P|GR
+LGTS|SKG|Thessaloniki Macedonia|40.5197|22.9709|22|L|8000|P|GR
+LGKR|CFU|Corfu|39.6019|19.9117|6|M|7792|P|GR
+LGIR|HER|Heraklion|35.3397|25.1803|115|L|8793|P|GR
+LGRP|RHO|Rhodes Diagoras|36.4054|28.0862|17|L|10778|P|GR
+LCLK|LCA|Larnaca|34.8751|33.6249|8|L|9744|P|CY
+LTFM|IST|Istanbul|41.2753|28.7519|325|L|13451|P|TR
+LTAC|ESB|Ankara Esenboga|40.1281|32.9951|3125|L|12303|P|TR
+LTBJ|ADB|Izmir Adnan Menderes|38.2924|27.1570|412|L|10630|P|TR
+LTAI|AYT|Antalya|36.8987|30.8005|177|L|11155|P|TR
+LTCG|TZX|Trabzon|40.9951|39.7897|104|M|8661|P|TR
+LIMC|MXP|Milan Malpensa|45.6306|8.7281|768|L|12861|P|IT
+LIML|LIN|Milan Linate|45.4451|9.2767|353|L|8012|P|IT
+LIPZ|VCE|Venice Marco Polo|45.5053|12.3519|7|L|10827|P|IT
+LIPE|BLQ|Bologna|44.5354|11.2887|123|L|9180|P|IT
+LIRQ|FLR|Florence Peretola|43.8100|11.2051|142|M|5709|P|IT
+LIRF|FCO|Rome Fiumicino|41.8003|12.2389|13|L|12795|P|IT
+LIRU||Rome Urbe|41.9519|12.4989|55|S|3609|P|IT
+LIRN|NAP|Naples|40.8860|14.2908|294|L|8661|P|IT
+LIBD|BRI|Bari|41.1389|16.7606|177|L|9843|P|IT
+LICJ|PMO|Palermo|38.1760|13.0910|65|L|10942|P|IT
+LICC|CTA|Catania|37.4668|15.0664|39|L|7989|P|IT
+LIEO|OLB|Olbia Costa Smeralda|40.8987|9.5176|37|M|8022|P|IT
+LIEE|CAG|Cagliari Elmas|39.2515|9.0543|13|L|9186|P|IT
+LMML|MLA|Malta International|35.8575|14.4775|300|L|11627|P|MT
+LEMD|MAD|Madrid-Barajas|40.4719|-3.5626|1998|L|14272|P|ES
+LECU||Madrid Cuatro Vientos|40.3706|-3.7851|2269|S|4921|P|ES
+LEBL|BCN|Barcelona-El Prat|41.2971|2.0785|12|L|11654|P|ES
+LEZG|ZAZ|Zaragoza|41.6662|-1.0416|863|L|12198|P|ES
+LEBB|BIO|Bilbao|43.3011|-2.9106|138|L|8530|P|ES
+LEST|SCQ|Santiago de Compostela|42.8963|-8.4151|1213|M|10499|P|ES
+LEVC|VLC|Valencia|39.4893|-0.4816|240|L|10499|P|ES
+LEPA|PMI|Palma de Mallorca|39.5517|2.7388|27|L|10728|P|ES
+LEZL|SVQ|Seville|37.4180|-5.8931|112|L|11024|P|ES
+LEMG|AGP|Malaga|36.6749|-4.4991|52|L|10500|P|ES
+GCXO|TFN|Tenerife North|28.4827|-16.3415|2073|L|11155|P|ES
+GCLP|LPA|Gran Canaria|27.9319|-15.3866|78|L|10171|P|ES
+LPPT|LIS|Lisbon Humberto Delgado|38.7813|-9.1359|374|L|12484|P|PT
+LPPR|OPO|Porto Francisco Sa Carneiro|41.2481|-8.6814|228|L|11417|P|PT
+LPFR|FAO|Faro|37.0144|-7.9659|24|L|8166|P|PT
+LPMA|FNC|Madeira|32.6979|-16.7745|192|M|9124|P|PT
+LPPD|PDL|Joao Paulo II Ponta Delgada|37.7412|-25.6979|259|M|8268|P|PT
+LPLA|TER|Lajes|38.7618|-27.0908|180|M|10865|P|PT
+BIKF|KEF|Keflavik International|63.9850|-22.6056|171|L|10020|P|IS
+BIRK|RKV|Reykjavik|64.1300|-21.9406|48|M|5141|P|IS
+BIAR|AEY|Akureyri|65.6600|-18.0727|6|M|7875|P|IS
+BIEG|EGS|Egilsstadir|65.2833|-14.4014|76|M|6562|P|IS
+BGBW|UAK|Narsarsuaq|61.1605|-45.4260|112|M|6004|P|GL
+BGGH|GOH|Nuuk|64.1909|-51.6781|283|M|7218|P|GL
+BGSF|SFJ|Kangerlussuaq|67.0122|-50.7116|165|M|9219|P|GL
+UUEE|SVO|Moscow Sheremetyevo|55.9726|37.4146|630|L|11647|P|RU
+ULLI|LED|Saint Petersburg Pulkovo|59.8003|30.2625|78|L|12408|P|RU
+UNNT|OVB|Novosibirsk Tolmachevo|55.0126|82.6507|365|L|11818|P|RU
+UHWW|VVO|Vladivostok International|43.3990|132.1480|46|L|11483|P|RU
+UHPP|PKC|Petropavlovsk-Kamchatsky Yelizovo|53.1679|158.4536|131|L|11155|P|RU
+UHMA|DYR|Ugolny Anadyr|64.7350|177.7414|194|M|11483|P|RU
+GMMN|CMN|Mohammed V International|33.3675|-7.5900|656|L|12205|P|MA
+GMMX|RAK|Marrakesh Menara|31.6069|-8.0363|1545|L|10171|P|MA
+GMTT|TNG|Tangier Ibn Battouta|35.7269|-5.9169|62|M|11483|P|MA
+DAAG|ALG|Houari Boumediene|36.6910|3.2154|82|L|11483|P|DZ
+DTTA|TUN|Tunis-Carthage|36.8510|10.2272|22|L|10499|P|TN
+HLLM|MJI|Mitiga International|32.8941|13.2760|36|M|11089|P|LY
+HECA|CAI|Cairo International|30.1219|31.4056|382|L|13120|P|EG
+HELX|LXR|Luxor International|25.6710|32.7066|294|L|9843|P|EG
+HEGN|HRG|Hurghada International|27.1783|33.7994|52|L|13123|P|EG
+HSSK|KRT|Khartoum International|15.5895|32.5532|1265|L|9777|P|SD
+HAAB|ADD|Addis Ababa Bole International|8.9779|38.7993|7625|L|12467|P|ET
+HKJK|NBO|Jomo Kenyatta International|-1.3192|36.9278|5330|L|13507|P|KE
+HKNW|WIL|Nairobi Wilson|-1.3217|36.8148|5536|M|5052|P|KE
+HUEN|EBB|Entebbe International|0.0424|32.4435|3782|L|12001|P|UG
+HRYR|KGL|Kigali International|-1.9686|30.1395|4859|L|11483|P|RW
+HTKJ|JRO|Kilimanjaro International|-3.4294|37.0745|2932|L|11834|P|TZ
+HTDA|DAR|Julius Nyerere International|-6.8781|39.2026|182|L|9843|P|TZ
+FZAA|FIH|N'djili International|-4.3858|15.4446|1027|L|15420|P|CD
+FNLU|LAD|Quatro de Fevereiro|-8.8584|13.2312|243|L|12139|P|AO
+FLKK|LUN|Kenneth Kaunda International|-15.3308|28.4526|3779|L|13000|P|ZM
+FVRG|HRE|Robert Gabriel Mugabe International|-17.9318|31.0928|4887|L|15502|P|ZW
+FBSK|GBE|Sir Seretse Khama International|-24.5552|25.9182|3299|L|9843|P|BW
+FYWH|WDH|Hosea Kutako International|-22.4799|17.4709|5640|L|15010|P|NA
+FAOR|JNB|O. R. Tambo International|-26.1392|28.2460|5558|L|14495|P|ZA
+FALA|HLA|Lanseria International|-25.9385|27.9261|4517|M|10000|P|ZA
+FAGC||Grand Central|-25.9861|28.1401|5325|S|6004|P|ZA
+FAUP|UTN|Upington|-28.3991|21.2602|2791|M|16076|P|ZA
+FALE|DUR|King Shaka International|-29.6144|31.1197|295|L|12139|P|ZA
+FAPE|PLZ|Chief Dawid Stuurman International|-33.9849|25.6173|226|M|6496|P|ZA
+FACT|CPT|Cape Town International|-33.9649|18.6017|151|L|10502|P|ZA
+FQMA|MPM|Maputo International|-25.9208|32.5726|145|L|12008|P|MZ
+FMMI|TNR|Ivato International|-18.7969|47.4788|4198|L|10171|P|MG
+FMEE|RUN|Roland Garros|-20.8871|55.5103|66|L|10499|P|RE
+FIMP|MRU|Sir Seewoosagur Ramgoolam International|-20.4302|57.6836|186|L|11056|P|MU
+DNMM|LOS|Murtala Muhammed International|6.5774|3.3212|135|L|12795|P|NG
+DNAA|ABV|Nnamdi Azikiwe International|9.0068|7.2632|1123|L|11842|P|NG
+DGAA|ACC|Kotoka International|5.6052|-0.1668|205|L|11165|P|GH
+DIAP|ABJ|Felix-Houphouet-Boigny International|5.2614|-3.9263|21|L|9842|P|CI
+GABS|BKO|Modibo Keita International|12.5335|-7.9499|1247|L|10499|P|ML
+DRRN|NIM|Diori Hamani International|13.4815|2.1836|732|M|9843|P|NE
+FTTJ|NDJ|N'Djamena International|12.1337|15.0340|968|M|9186|P|TD
+GOBD|DSS|Blaise Diagne International|14.6700|-17.0733|290|L|11483|P|SN
+GVAC|SID|Amilcar Cabral International|16.7414|-22.9494|177|M|10735|P|CV
+OMDB|DXB|Dubai International|25.2528|55.3644|62|L|14600|P|AE
+OMAA|AUH|Zayed International|24.4330|54.6511|88|L|13451|P|AE
+OTHH|DOH|Hamad International|25.2731|51.6081|13|L|15912|P|QA
+OBBI|BAH|Bahrain International|26.2708|50.6336|6|L|12979|P|BH
+OKKK|KWI|Kuwait International|29.2266|47.9689|206|L|11483|P|KW
+OERK|RUH|King Khalid International|24.9576|46.6988|2049|L|13796|P|SA
+OEJN|JED|King Abdulaziz International|21.6796|39.1565|48|L|13123|P|SA
+OOMS|MCT|Muscat International|23.5933|58.2844|48|L|13123|P|OM
+OJAI|AMM|Queen Alia International|31.7226|35.9932|2395|L|12008|P|JO
+LLBG|TLV|Ben Gurion|32.0114|34.8867|135|L|11998|P|IL
+OPKC|KHI|Jinnah International|24.9065|67.1608|100|L|11155|P|PK
+OPIS|ISB|Islamabad International|33.5491|72.8256|1761|L|12000|P|PK
+VIDP|DEL|Indira Gandhi International|28.5665|77.1031|777|L|14534|P|IN
+VAAH|AMD|Sardar Vallabhbhai Patel International|23.0772|72.6347|189|L|11447|P|IN
+VABB|BOM|Chhatrapati Shivaji Maharaj International|19.0887|72.8679|39|L|12008|P|IN
+VOHS|HYD|Rajiv Gandhi International|17.2313|78.4298|2024|L|13976|P|IN
+VOBL|BLR|Kempegowda International|13.1979|77.7063|3000|L|13123|P|IN
+VOMM|MAA|Chennai International|12.9900|80.1693|52|L|12001|P|IN
+VOCI|COK|Cochin International|10.1520|76.4019|30|L|11155|P|IN
+VECC|CCU|Netaji Subhas Chandra Bose International|22.6547|88.4467|16|L|11900|P|IN
+VNKT|KTM|Tribhuvan International|27.6966|85.3591|4390|L|10007|P|NP
+VGHS|DAC|Hazrat Shahjalal International|23.8433|90.3978|30|L|10500|P|BD
+VCBI|CMB|Bandaranaike International|7.1808|79.8841|30|L|10991|P|LK
+VRMM|MLE|Velana International|4.1918|73.5291|6|L|11000|P|MV
+VYYY|RGN|Yangon International|16.9073|96.1332|109|L|11200|P|MM
+VTBS|BKK|Suvarnabhumi|13.6900|100.7501|5|L|13123|P|TH
+VTCC|CNX|Chiang Mai International|18.7668|98.9626|1036|L|10171|P|TH
+VTSP|HKT|Phuket International|8.1132|98.3169|82|L|9843|P|TH
+VDPP|PNH|Phnom Penh International|11.5466|104.8440|40|L|9843|P|KH
+VVTS|SGN|Tan Son Nhat International|10.8188|106.6520|33|L|12468|P|VN
+VVDN|DAD|Da Nang International|16.0439|108.1990|33|L|10000|P|VN
+VVNB|HAN|Noi Bai International|21.2212|105.8070|39|L|12467|P|VN
+WMKK|KUL|Kuala Lumpur International|2.7456|101.7099|69|L|13530|P|MY
+WMSA|SZB|Sultan Abdul Aziz Shah|3.1306|101.5490|90|M|12402|P|MY
+WSSS|SIN|Singapore Changi|1.3502|103.9944|22|L|13123|P|SG
+WSSL|XSP|Seletar|1.4170|103.8678|36|M|6024|P|SG
+WBKK|BKI|Kota Kinabalu International|5.9372|116.0510|10|L|9800|P|MY
+WBGG|KCH|Kuching International|1.4847|110.3470|89|L|12008|P|MY
+WIII|CGK|Soekarno-Hatta International|-6.1256|106.6559|34|L|12008|P|ID
+WARR|SUB|Juanda International|-7.3798|112.7870|9|L|9843|P|ID
+WADD|DPS|I Gusti Ngurah Rai International|-8.7482|115.1670|14|L|9842|P|ID
+WAAA|UPG|Sultan Hasanuddin International|-5.0616|119.5540|47|L|10171|P|ID
+RPLL|MNL|Ninoy Aquino International|14.5086|121.0198|75|L|12261|P|PH
+RPVM|CEB|Mactan-Cebu International|10.3075|123.9790|31|L|10827|P|PH
+RPMD|DVO|Francisco Bangoy International|7.1255|125.6458|96|L|9843|P|PH
+VHHH|HKG|Hong Kong International|22.3080|113.9185|28|L|12467|P|HK
+ZGGG|CAN|Guangzhou Baiyun International|23.3924|113.2990|50|L|12467|P|CN
+ZSPD|PVG|Shanghai Pudong International|31.1434|121.8052|13|L|13123|P|CN
+ZBAA|PEK|Beijing Capital International|40.0801|116.5846|116|L|12467|P|CN
+ZUUU|CTU|Chengdu Shuangliu International|30.5785|103.9471|1625|L|11811|P|CN
+ZPPP|KMG|Kunming Changshui International|25.1019|102.9292|6903|L|14764|P|CN
+ZLXY|XIY|Xi'an Xianyang International|34.4471|108.7516|1572|L|12467|P|CN
+ZULS|LXA|Lhasa Gonggar|29.2978|90.9119|11713|L|13123|P|CN
+ZWWW|URC|Urumqi Tianshan International|43.9071|87.4742|2125|L|11811|P|CN
+ZYHB|HRB|Harbin Taiping International|45.6234|126.2500|457|L|10500|P|CN
+RCTP|TPE|Taiwan Taoyuan International|25.0777|121.2328|106|L|12467|P|TW
+RCSS|TSA|Taipei Songshan|25.0694|121.5525|18|L|8547|P|TW
+RKSI|ICN|Incheon International|37.4691|126.4510|23|L|13123|P|KR
+RKSS|GMP|Gimpo International|37.5583|126.7906|59|L|11811|P|KR
+RKPC|CJU|Jeju International|33.5113|126.4930|118|L|10433|P|KR
+RJTT|HND|Tokyo Haneda|35.5523|139.7800|35|L|11024|P|JP
+RJTF||Chofu|35.6717|139.5281|139|S|2625|P|JP
+RJAA|NRT|Narita International|35.7647|140.3864|141|L|13123|P|JP
+RJSS|SDJ|Sendai|38.1397|140.9170|15|L|9843|P|JP
+RJCC|CTS|New Chitose|42.7752|141.6923|82|L|9843|P|JP
+RJGG|NGO|Chubu Centrair International|34.8584|136.8054|15|L|11483|P|JP
+RJBB|KIX|Kansai International|34.4273|135.2441|26|L|13123|P|JP
+RJFF|FUK|Fukuoka|33.5859|130.4511|32|L|9186|P|JP
+ROAH|OKA|Naha|26.1958|127.6459|12|L|9842|P|JP
+ZMCK|UBN|Chinggis Khaan International|47.6467|106.8194|4482|L|11811|P|MN
+UAAA|ALA|Almaty International|43.3521|77.0405|2234|L|14427|P|KZ
+UTTT|TAS|Tashkent International|41.2579|69.2812|1417|L|13123|P|UZ
+YSSY|SYD|Sydney Kingsford Smith|-33.9461|151.1772|21|L|12999|P|AU
+YSBK|BWU|Sydney Bankstown|-33.9244|150.9883|29|M|4642|P|AU
+YSCB|CBR|Canberra|-35.3069|149.1950|1886|L|10778|P|AU
+YSDU|DBO|Dubbo Regional|-32.2167|148.5747|935|M|5604|P|AU
+YSWG|WGA|Wagga Wagga|-35.1653|147.4664|724|M|5801|P|AU
+YMML|MEL|Melbourne Tullamarine|-37.6733|144.8433|434|L|11998|P|AU
+YMMB|MBW|Moorabbin|-37.9758|145.1022|50|M|4199|P|AU
+YMAV|AVV|Avalon|-38.0394|144.4694|35|M|10000|P|AU
+YMMI|MQL|Mildura|-34.2292|142.0858|167|M|6004|P|AU
+YMHB|HBA|Hobart|-42.8361|147.5103|13|L|8858|P|AU
+YMLT|LST|Launceston|-41.5453|147.2142|562|M|6499|P|AU
+YPAD|ADL|Adelaide|-34.9450|138.5306|20|L|10171|P|AU
+YPPF||Parafield|-34.7933|138.6331|57|M|4232|P|AU
+YCDU|CED|Ceduna|-32.1306|133.7100|77|S|5709|P|AU
+YCBP|CPD|Coober Pedy|-29.0400|134.7210|740|S|4692|P|AU
+YBAS|ASP|Alice Springs|-23.8067|133.9022|1789|L|7999|P|AU
+YTNK|TCA|Tennant Creek|-19.6344|134.1833|1236|S|6385|P|AU
+YPDN|DRW|Darwin|-12.4147|130.8767|103|L|11004|P|AU
+YPKU|KNX|Kununurra|-15.7781|128.7075|145|S|6000|P|AU
+YBRM|BME|Broome International|-17.9447|122.2322|56|M|8064|P|AU
+YPPD|PHE|Port Hedland International|-20.3778|118.6264|33|M|8202|P|AU
+YPLM|LEA|Learmonth|-22.2356|114.0886|19|M|9997|P|AU
+YPGN|GET|Geraldton|-28.7961|114.7072|121|M|6503|P|AU
+YPPH|PER|Perth|-31.9403|115.9669|67|L|11299|P|AU
+YPJT|JAD|Perth Jandakot|-32.0975|115.8811|99|M|4544|P|AU
+YPKG|KGI|Kalgoorlie-Boulder|-30.7894|121.4617|1203|M|6562|P|AU
+YPEA|EPR|Esperance|-33.6844|121.8228|470|S|4920|P|AU
+YBMA|ISA|Mount Isa|-20.6639|139.4886|1121|M|8399|P|AU
+YLRE|LRE|Longreach|-23.4342|144.2803|627|S|6352|P|AU
+YBCS|CNS|Cairns|-16.8858|145.7553|10|L|10489|P|AU
+YBTL|TSV|Townsville|-19.2525|146.7653|18|L|7999|P|AU
+YBMK|MKY|Mackay|-21.1717|149.1797|19|M|6496|P|AU
+YBRK|ROK|Rockhampton|-23.3819|150.4753|34|M|8622|P|AU
+YBBN|BNE|Brisbane|-27.3842|153.1175|13|L|11680|P|AU
+YBAF||Archerfield|-27.5703|153.0081|63|M|4865|P|AU
+YBCG|OOL|Gold Coast|-28.1644|153.5047|21|L|8366|P|AU
+YLHI|LDH|Lord Howe Island|-31.5383|159.0770|5|S|2907|P|AU
+YSNF|NLK|Norfolk Island|-29.0416|167.9387|371|M|6400|P|NF
+NZAA|AKL|Auckland|-37.0081|174.7917|23|L|11926|P|NZ
+NZAR||Ardmore|-37.0297|174.9733|111|M|4777|P|NZ
+NZWR|WRE|Whangarei|-35.7683|174.3650|133|S|3599|P|NZ
+NZGS|GIS|Gisborne|-38.6633|177.9783|15|M|4298|P|NZ
+NZNP|NPL|New Plymouth|-39.0086|174.1792|97|M|4724|P|NZ
+NZWN|WLG|Wellington|-41.3272|174.8053|41|L|6352|P|NZ
+NZNS|NSN|Nelson|-41.2983|173.2211|17|M|4380|P|NZ
+NZHK|HKK|Hokitika|-42.7136|170.9853|146|S|4311|P|NZ
+NZCH|CHC|Christchurch|-43.4894|172.5322|123|L|10787|P|NZ
+NZQN|ZQN|Queenstown|-45.0211|168.7392|1171|M|5900|P|NZ
+NZDN|DUD|Dunedin|-45.9281|170.1983|4|M|6234|P|NZ
+NZNV|IVC|Invercargill|-46.4124|168.3130|5|M|7218|P|NZ
+NZCI|CHT|Chatham Islands Tuuta|-43.8100|-176.4572|43|S|4462|P|NZ
+NFFN|NAN|Nadi International|-17.7554|177.4434|59|L|10738|P|FJ
+NFNA|SUV|Nausori International|-18.0433|178.5592|17|M|6136|P|FJ
+NWWW|NOU|La Tontouta International|-22.0146|166.2129|52|L|10663|P|NC
+NVVV|VLI|Bauerfield International|-17.6993|168.3198|70|M|8530|P|VU
+AGGH|HIR|Honiara International|-9.4280|160.0548|28|M|7218|P|SB
+AYPY|POM|Jacksons International|-9.4434|147.2200|146|L|9022|P|PG
+NSFA|APW|Faleolo International|-13.8300|-172.0083|58|M|9843|P|WS
+NFTF|TBU|Fua'amotu International|-21.2412|-175.1500|126|M|8795|P|TO
+NCRG|RAR|Rarotonga International|-21.2027|-159.8060|19|M|7638|P|CK
+NTAA|PPT|Faa'a International|-17.5537|-149.6070|5|L|11204|P|PF
+PGUM|GUM|Antonio B. Won Pat International|13.4834|144.7960|298|L|10014|P|GU
+PTRO|ROR|Roman Tmetuchl International|7.3673|134.5440|176|M|7200|P|PW
+PKMJ|MAJ|Amata Kabua International|7.0648|171.2720|6|M|7897|P|MH
+NGTA|TRW|Bonriki International|1.3816|173.1470|9|M|6598|P|KI
+PLCH|CXI|Cassidy International|1.9862|-157.3500|5|M|6900|P|KI
+`;
+/* =========================================================================
+   MAP ENGINE: Web Mercator canvas renderer with world wrap and a cached
+   overlay bitmap. All range geometry is computed on the sphere and only
+   projected for drawing. No SVG: every layer is batched into a few canvas
+   paths, with a vertex budget and viewport culling.
+   ========================================================================= */
+const TILE = 256, MAX_ZOOM = 13;
+const CIRCLE_SEG_BUDGET = 700000;   // circle vertices per overlay render
+const EDGE_BUDGET = 30000;          // network links drawn before sparsifying
+const FONT_STACK = '"B612", "Segoe UI", system-ui, -apple-system, Arial, sans-serif';
+const REDUCED_MOTION = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wrapLon = (l) => ((l + 540) % 360) - 180;
+
+class MapView {
+  constructor(canvas, app) {
+    this.cv = canvas; this.ctx = canvas.getContext('2d'); this.app = app;
+    this.W = 1; this.H = 1; this.dpr = 1;
+    this.cx = Merc.x(-20); this.cy = Merc.y(28); this.z = 2;
+    this.land = null; this.C = {};
+    this.cache = document.createElement('canvas'); this.cctx = this.cache.getContext('2d');
+    this.mask = document.createElement('canvas'); this.ring = document.createElement('canvas');
+    this.cacheView = null; this.dirty = true; this.raf = 0;
+    this.interacting = false; this.idleT = 0; this.invT = 0; this.anim = null;
+    this.ptrs = new Map(); this.drag = null; this.pinch = null;
+    this.hit = null; this.hover = null; this.lastRenderMs = 0;
+    this.readColors();
+    this._bind();
+  }
+
+  get S() { return TILE * Math.pow(2, this.z); }
+  minZoom() { return Math.log2(Math.max(this.H, this.W * 0.5, TILE) / TILE); }
+
+  readColors() {
+    const cs = getComputedStyle(document.documentElement);
+    const v = (n) => cs.getPropertyValue(n).trim();
+    this.C = {
+      water: v('--map-water'), land: v('--map-land'), border: v('--map-border'), grat: v('--map-grat'), gratText: v('--map-grat-text'),
+      ring: v('--ring'), ringThin: v('--ring-thin'), ringFill: v('--ring-fill'),
+      unionFill: v('--union-fill'), unionInner: v('--union-inner'), unionEdge: v('--union-edge'),
+      aptL: v('--apt-l'), aptM: v('--apt-m'), aptS: v('--apt-s'), aptW: v('--apt-w'), halo: v('--apt-halo'),
+      reach: v('--reach'), dim: v('--dim'), sel: v('--sel'), selFill: v('--sel-fill'), spoke: v('--spoke'),
+      route: v('--route'), routeCase: v('--route-case'), net: v('--net'), iso: v('--iso'), ink: v('--ink'),
+      comp: v('--comp').split(',').map((s) => s.trim()).filter(Boolean),
+    };
+    this.invalidate();
+  }
+
+  /* ---------- view state ---------- */
+  clampView() {
+    this.z = clamp(this.z, this.minZoom(), MAX_ZOOM);
+    this.cx = ((this.cx % 1) + 1) % 1;
+    const half = this.H / 2 / this.S;
+    this.cy = 2 * half >= 1 ? 0.5 : clamp(this.cy, half, 1 - half);
+  }
+  resize() {
+    const r = this.cv.parentElement.getBoundingClientRect();
+    this.W = Math.max(1, r.width); this.H = Math.max(1, r.height);
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.cv.width = Math.round(this.W * this.dpr); this.cv.height = Math.round(this.H * this.dpr);
+    this.clampView();
+    this.invalidate();
+  }
+  resetView() {
+    const z = this.minZoom() + 0.15;
+    this.flyToWorld(Merc.x(-25), Merc.y(30), z, 500);
+  }
+  latLonAt(x, y) {
+    const S = this.S;
+    return [Merc.lat(this.cy + (y - this.H / 2) / S), wrapLon(Merc.lon(this.cx + (x - this.W / 2) / S))];
+  }
+  invalidate(delay) {
+    clearTimeout(this.invT);
+    if (delay) { this.invT = setTimeout(() => { this.dirty = true; this.request(); }, delay); return; }
+    this.dirty = true; this.request();
+  }
+  request() { if (!this.raf) this.raf = requestAnimationFrame((t) => this.frame(t)); }
+
+  _vp() {
+    const S = this.S, ox = this.W / 2 - this.cx * S, oy = this.H / 2 - this.cy * S;
+    return { S, ox, oy, W: this.W, H: this.H, kmin: Math.floor(-ox / S) - 1, kmax: Math.floor((this.W - ox) / S) + 1 };
+  }
+
+  /* ---------- frame ---------- */
+  frame(now) {
+    this.raf = 0;
+    if (this.anim) this.anim(now || performance.now());
+    const ctx = this.ctx, dpr = this.dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = this.C.water; ctx.fillRect(0, 0, this.W, this.H);
+    this.drawLand(ctx);
+    this.drawGraticule(ctx);
+    if (this.dirty && !this.interacting && !this.anim) this.renderOverlay();
+    this.drawCache(ctx);
+    this.drawHover(ctx);
+    this.app.onFrame(this);
+    if (this.anim) this.request();
+  }
+
+  drawLand(ctx) {
+    if (!this.land) return;
+    const S = this.S, dpr = this.dpr, ox = this.W / 2 - this.cx * S, oy = this.H / 2 - this.cy * S;
+    const k0 = Math.floor(-ox / S), k1 = Math.floor((this.W - ox) / S);
+    ctx.save();
+    ctx.fillStyle = this.C.land; ctx.strokeStyle = this.C.border; ctx.lineJoin = 'round';
+    for (let k = k0; k <= k1; k++) {
+      ctx.setTransform(S * dpr, 0, 0, S * dpr, (ox + k * S) * dpr, oy * dpr);
+      ctx.fill(this.land, 'evenodd');
+      ctx.lineWidth = 0.8 / S;
+      ctx.stroke(this.land);
+    }
+    ctx.restore();
+  }
+
+  drawGraticule(ctx) {
+    const S = this.S, W = this.W, H = this.H, ox = W / 2 - this.cx * S, oy = H / 2 - this.cy * S;
+    const pxDeg = S / 360;
+    let step = 30;
+    for (const s of [30, 15, 10, 5, 2, 1, 0.5, 0.25]) if (s * pxDeg >= 90) step = s;
+    ctx.save();
+    ctx.strokeStyle = this.C.grat; ctx.lineWidth = 1;
+    ctx.beginPath();
+    const lonLab = [], latLab = [];
+    const l0 = Merc.lon(-ox / S), l1 = Merc.lon((W - ox) / S);
+    for (let L = Math.ceil(l0 / step) * step; L <= l1; L += step) {
+      const x = Math.round(ox + Merc.x(L) * S) + 0.5;
+      ctx.moveTo(x, 0); ctx.lineTo(x, H); lonLab.push([x, L]);
+    }
+    const top = Math.min(80, Merc.lat(-oy / S)), bot = Math.max(-80, Merc.lat((H - oy) / S));
+    for (let L = Math.ceil(bot / step) * step; L <= top; L += step) {
+      const y = Math.round(oy + Merc.y(L) * S) + 0.5;
+      ctx.moveTo(0, y); ctx.lineTo(W, y); latLab.push([y, L]);
+    }
+    ctx.stroke();
+    ctx.fillStyle = this.C.gratText; ctx.font = '10px ' + FONT_STACK;
+    const dec = step < 1 ? 2 : 0;
+    ctx.textBaseline = 'top';
+    for (const [x, L] of lonLab) {
+      const v = wrapLon(L);
+      ctx.fillText(Math.abs(v).toFixed(dec) + '°' + (v < 0 ? 'W' : v > 0 && v < 180 ? 'E' : ''), x + 3, 56);
+    }
+    ctx.textBaseline = 'bottom';
+    for (const [y, L] of latLab) if (y > 70 && y < H - 60) ctx.fillText(Math.abs(L).toFixed(dec) + '°' + (L < 0 ? 'S' : L > 0 ? 'N' : ''), 4, y - 2);
+    ctx.restore();
+  }
+
+  drawCache(ctx) {
+    const v = this.cacheView;
+    if (!v) return;
+    const S = this.S, S0 = TILE * Math.pow(2, v.z), k = S / S0;
+    let dx = v.cx - this.cx; dx -= Math.round(dx);
+    const sx = (dx - v.W / 2 / S0) * S + this.W / 2;
+    const sy = (v.cy - v.H / 2 / S0 - this.cy) * S + this.H / 2;
+    const sc = (k * this.dpr) / v.dpr;
+    ctx.save();
+    ctx.setTransform(sc, 0, 0, sc, sx * this.dpr, sy * this.dpr);
+    ctx.drawImage(this.cache, 0, 0);
+    ctx.restore();
+  }
+
+  drawHover(ctx) {
+    const h = this.hover;
+    if (!h || this.interacting || this.anim || this.dirty) return;
+    ctx.save();
+    ctx.lineWidth = 3; ctx.strokeStyle = this.C.halo;
+    ctx.beginPath(); ctx.arc(h.x, h.y, 7, 0, Math.PI * 2); ctx.stroke();
+    ctx.lineWidth = 1.6; ctx.strokeStyle = this.C.ink; ctx.stroke();
+    ctx.restore();
+  }
+
+  setLand(rings) {
+    const p = new Path2D();
+    for (const r of rings) {
+      p.moveTo(r[0], r[1]);
+      for (let i = 2; i < r.length; i += 2) p.lineTo(r[i], r[i + 1]);
+      p.closePath();
+    }
+    this.land = p;
+    this.request();
+  }
+
+  /* ---------- overlay ---------- */
+  renderOverlay() {
+    const t0 = performance.now();
+    const { W, H, dpr } = this;
+    const pw = Math.max(1, Math.round(W * dpr)), ph = Math.max(1, Math.round(H * dpr));
+    for (const c of [this.cache, this.mask, this.ring]) if (c.width !== pw || c.height !== ph) { c.width = pw; c.height = ph; }
+    const c = this.cctx;
+    c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, pw, ph);
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.lineJoin = 'round';
+    const app = this.app, st = app.st, E = st.E, V = app.view;
+    const vp = this._vp();
+    const info = { circles: 0, links: 0, sparse: 0 };
+    const vis = this._visible(vp);
+    if (E && E.n) {
+      if (V.mode === 'union') this._drawUnion(c, vp, info);
+      if (V.mode === 'network') this._drawNetwork(c, vp, vis, info);
+      if (V.circles && V.mode === 'circles') this._drawCircleField(c, vp, info, false);
+    }
+    this._drawSelection(c, vp);
+    if (V.markers) this._drawAirports(c, vp, vis);
+    this._drawSelMarkers(c, vp);
+    if (V.labels) this._drawLabels(c, vp, vis);
+    this._buildHit(vp, vis);
+    this.cacheView = { cx: this.cx, cy: this.cy, z: this.z, W, H, dpr };
+    this.dirty = false;
+    this.lastRenderMs = performance.now() - t0;
+    info.visible = vis.e.length;
+    app.onRendered(info, this.lastRenderMs);
+  }
+
+  _visible(vp) {
+    const E = this.app.st.E, out = { e: [], x: [], y: [] };
+    if (!E) return out;
+    const { S, ox, oy, W, H } = vp, m = 8;
+    for (let k = vp.kmin; k <= vp.kmax; k++) {
+      const bx = ox + k * S;
+      if (bx + S < -m || bx > W + m) continue;
+      for (let i = 0; i < E.n; i++) {
+        const x = bx + E.wx[i] * S;
+        if (x < -m || x > W + m) continue;
+        const y = oy + E.wy[i] * S;
+        if (y < -m || y > H + m) continue;
+        out.e.push(i); out.x.push(x); out.y.push(y);
+      }
+    }
+    return out;
+  }
+
+  _circleItems(vp, T) {
+    const E = this.app.st.E, { S, ox, oy, W, H } = vp;
+    const it = { t: [], bx: [], by: [] };
+    for (let i = 0; i < E.n; i++) {
+      const t = T.get(E.lat[i]);
+      const by = oy + E.wy[i] * S;
+      if (by + t.maxY * S < 0 || by + t.minY * S > H) continue;
+      for (let k = vp.kmin; k <= vp.kmax; k++) {
+        const bx = ox + (E.wx[i] + k) * S;
+        if (bx + t.maxX * S < 0 || bx + t.minX * S > W) continue;
+        it.t.push(t); it.bx.push(bx); it.by.push(by);
+      }
+    }
+    return it;
+  }
+
+  /** Vertex step per template: ~1.3 vertices per pixel of radius, then a global budget. */
+  _stepFn(items, S) {
+    const base = (t) => {
+      if (t._S === S) return t._b;
+      const want = clamp(1.3 * t.rx * S, 12, CIRCLE_N);
+      let s = 1;
+      while (s < 32 && CIRCLE_N / (s * 2) >= want) s *= 2;
+      t._S = S; t._b = s;
+      return s;
+    };
+    let total = 0;
+    for (const t of items.t) total += CIRCLE_N / base(t);
+    let f = 1;
+    while (total / f > CIRCLE_SEG_BUDGET && f < 32) f *= 2;
+    return (t) => Math.min(32, base(t) * f);
+  }
+
+  _traceOne(p, t, bx, by, s, S) {
+    const xs = t.xs, ys = t.ys;
+    if (t.noLod) s = 1;
+    p.moveTo(bx + xs[0] * S, by + ys[0] * S);
+    const main = t.noLod ? t.n : t.main;
+    for (let i = s; i < main; i += s) p.lineTo(bx + xs[i] * S, by + ys[i] * S);
+    if (t.enclosed && !t.noLod) for (let i = t.main; i < t.n; i++) p.lineTo(bx + xs[i] * S, by + ys[i] * S);
+    p.closePath();
+  }
+
+  _circlePath(vp, radius) {
+    const T = this.app.templates(radius);
+    const items = this._circleItems(vp, T);
+    const step = this._stepFn(items, vp.S);
+    const p = new Path2D();
+    for (let i = 0; i < items.t.length; i++) this._traceOne(p, items.t[i], items.bx[i], items.by[i], step(items.t[i]), vp.S);
+    return { p, n: items.t.length };
+  }
+
+  _drawCircleField(c, vp, info, thin) {
+    const { p, n } = this._circlePath(vp, this.app.st.radius);
+    if (!thin) { c.fillStyle = this.C.ringFill; c.fill(p, 'nonzero'); }
+    c.strokeStyle = thin ? this.C.ringThin : this.C.ring;
+    c.lineWidth = thin ? 0.6 : 0.9;
+    c.stroke(p);
+    info.circles = n;
+  }
+
+  _drawUnion(c, vp, info) {
+    const st = this.app.st, C = this.C;
+    const outer = this._circlePath(vp, st.radius);
+    const inner = this._circlePath(vp, st.radius / 2);
+    c.fillStyle = C.unionFill; c.fill(outer.p, 'nonzero');
+    c.fillStyle = C.unionInner; c.fill(inner.p, 'nonzero');
+    this._boundary(c, outer.p, C.unionEdge, 1.3, 1);
+    info.circles = outer.n;
+  }
+
+  /** Outline of a union: dilate the filled mask by a few pixels and subtract it. */
+  _boundary(c, path, color, wcss, alpha) {
+    const m = this.mask, mc = m.getContext('2d'), r = this.ring, rc = r.getContext('2d');
+    const w = m.width, h = m.height, dpr = this.dpr;
+    mc.setTransform(1, 0, 0, 1, 0, 0); mc.clearRect(0, 0, w, h);
+    mc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    mc.fillStyle = '#000'; mc.fill(path, 'nonzero');
+    rc.setTransform(1, 0, 0, 1, 0, 0);
+    rc.globalCompositeOperation = 'source-over'; rc.clearRect(0, 0, w, h);
+    const s = Math.max(1, Math.round(wcss * dpr));
+    for (const [dx, dy] of [[s, 0], [-s, 0], [0, s], [0, -s]]) rc.drawImage(m, dx, dy);
+    rc.globalCompositeOperation = 'destination-out'; rc.drawImage(m, 0, 0);
+    rc.globalCompositeOperation = 'source-in'; rc.fillStyle = color; rc.fillRect(0, 0, w, h);
+    rc.globalCompositeOperation = 'source-over';
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = alpha; c.drawImage(r, 0, 0); c.restore();
+  }
+
+  _drawNetwork(c, vp, vis, info) {
+    const st = this.app.st, E = st.E, grid = st.grid, S = vp.S;
+    if (!grid) return;
+    const cosR = grid.cosR, nv = vis.e.length;
+    const isVis = new Uint8Array(E.n);
+    for (let v = 0; v < nv; v++) isVis[vis.e[v]] = 1;
+    let seg = [], over = false, cur = 0, curV = 0;
+    const all = (j) => {
+      if (over || j === cur || (isVis[j] && j < cur)) return;
+      seg.push(curV, j);
+      if (seg.length > EDGE_BUDGET * 2) over = true;
+    };
+    for (let v = 0; v < nv && !over; v++) {
+      cur = vis.e[v]; curV = v;
+      grid.query(E.ux[cur], E.uy[cur], E.uz[cur], cosR, all);
+    }
+    let K = 0;
+    if (over) {
+      seg = [];
+      K = clamp(Math.floor(EDGE_BUDGET / Math.max(1, nv)), 1, 6);
+      const bj = new Int32Array(K), bd = new Float64Array(K);
+      let m = 0;
+      const best = (j, dot) => {
+        if (j === cur) return;
+        if (m === K && dot <= bd[K - 1]) return;
+        let q = m < K ? m++ : K - 1;
+        while (q > 0 && bd[q - 1] < dot) { bd[q] = bd[q - 1]; bj[q] = bj[q - 1]; q--; }
+        bd[q] = dot; bj[q] = j;
+      };
+      for (let v = 0; v < nv; v++) {
+        cur = vis.e[v]; m = 0;
+        grid.query(E.ux[cur], E.uy[cur], E.uz[cur], cosR, best);
+        for (let q = 0; q < m; q++) seg.push(v, bj[q]);
+      }
+    }
+    const p = new Path2D();
+    for (let s = 0; s < seg.length; s += 2) {
+      const v = seg[s], j = seg[s + 1], i = vis.e[v], sx = vis.x[v], sy = vis.y[v];
+      let dxw = E.wx[j] - E.wx[i]; dxw -= Math.round(dxw);
+      const jx = sx + dxw * S, jy = vp.oy + E.wy[j] * S;
+      const len = Math.hypot(jx - sx, jy - sy);
+      if (len > 150) {
+        const n = clamp(Math.ceil(len / 40), 2, 24);
+        const pts = Geo.path(E.lat[i], E.lon[i], E.lat[j], E.lon[j], n);
+        const kS = sx - (vp.ox + E.wx[i] * S);
+        for (let q = 0; q <= n; q++) {
+          const x = vp.ox + kS + Merc.x(pts[2 * q + 1]) * S, y = vp.oy + Merc.y(pts[2 * q]) * S;
+          if (q) p.lineTo(x, y); else p.moveTo(x, y);
+        }
+      } else { p.moveTo(sx, sy); p.lineTo(jx, jy); }
+    }
+    c.lineWidth = 0.8; c.strokeStyle = this.C.net; c.stroke(p);
+    info.links = seg.length / 2; info.sparse = K;
+  }
+
+  _copiesFor(vp, wx, t, pad) {
+    const ks = [];
+    for (let k = vp.kmin; k <= vp.kmax; k++) {
+      const bx = vp.ox + (wx + k) * vp.S;
+      if (bx + t.maxX * vp.S < -pad || bx + t.minX * vp.S > vp.W + pad) continue;
+      ks.push(k);
+    }
+    return ks;
+  }
+
+  _gcInto(p, lat1, lon1, lat2, lon2, ks, vp) {
+    const n = clamp(Math.ceil(Geo.dist(lat1, lon1, lat2, lon2) / 30), 1, 64);
+    const pts = Geo.path(lat1, lon1, lat2, lon2, n), S = vp.S;
+    for (const k of ks) {
+      for (let i = 0; i <= n; i++) {
+        const x = vp.ox + (Merc.x(pts[2 * i + 1]) + k) * S, y = vp.oy + Merc.y(pts[2 * i]) * S;
+        if (i) p.lineTo(x, y); else p.moveTo(x, y);
+      }
+    }
+  }
+
+  _drawSelection(c, vp) {
+    const app = this.app, st = app.st;
+    if (st.sel < 0 || !app.ds) return;
+    const a = app.ds.airports[st.sel], C = this.C, S = vp.S;
+    const t = app.templates(st.radius).get(a.lat);
+    const wx = Merc.x(a.lon), by = vp.oy + Merc.y(a.lat) * S;
+    const ks = this._copiesFor(vp, wx, t, 60);
+    if (app.view.mode === 'connect' && st.reach) {
+      const sp = new Path2D(), E = st.E;
+      for (const r of st.reach.list) this._gcInto(sp, a.lat, a.lon, E.lat[r.e], E.lon[r.e], ks, vp);
+      c.lineWidth = 0.9; c.strokeStyle = C.spoke; c.stroke(sp);
+    }
+    if (app.view.circles || app.view.mode === 'connect' || app.view.mode === 'union') {
+      const p = new Path2D();
+      for (const k of ks) this._traceOne(p, t, vp.ox + (wx + k) * S, by, 1, S);
+      c.fillStyle = C.selFill; c.fill(p);
+      c.lineWidth = 2.2; c.strokeStyle = C.halo; c.stroke(p);
+      c.lineWidth = 1.6; c.strokeStyle = C.sel; c.stroke(p);
+    }
+    const rt = st.route;
+    if (rt && rt.path && rt.path.length > 1) {
+      const E = st.E, P = rt.path, rp = new Path2D();
+      let prevLon = E.lon[P[0]];
+      const pts = [];
+      for (let i = 1; i < P.length; i++) {
+        const a1 = P[i - 1], b1 = P[i];
+        let la = E.lon[a1]; la += Math.round((prevLon - la) / 360) * 360;
+        const n = clamp(Math.ceil(Geo.dist(E.lat[a1], la, E.lat[b1], E.lon[b1]) / 25), 2, 64);
+        const g = Geo.path(E.lat[a1], la, E.lat[b1], E.lon[b1], n);
+        for (let q = i === 1 ? 0 : 1; q <= n; q++) pts.push(g[2 * q], g[2 * q + 1]);
+        prevLon = g[2 * n + 1];
+      }
+      for (let k = vp.kmin; k <= vp.kmax; k++) {
+        for (let q = 0; q < pts.length; q += 2) {
+          const x = vp.ox + (Merc.x(pts[q + 1]) + k) * S, y = vp.oy + Merc.y(pts[q]) * S;
+          if (q) rp.lineTo(x, y); else rp.moveTo(x, y);
+        }
+      }
+      c.lineCap = 'round';
+      c.lineWidth = 6; c.strokeStyle = C.routeCase; c.stroke(rp);
+      c.lineWidth = 2.6; c.strokeStyle = C.route; c.stroke(rp);
+      c.lineCap = 'butt';
+    }
+  }
+
+  _drawAirports(c, vp, vis) {
+    const st = this.app.st, E = st.E, C = this.C, mode = this.app.view.mode, z = this.z;
+    if (!E) return;
+    const r0 = z < 2.5 ? 1.5 : z < 4 ? 2 : z < 6 ? 2.6 : 3.2;
+    const typeR = [r0 * 1.6, r0 * 1.3, r0, r0 * 1.15];
+    const typeC = [C.aptL, C.aptM, C.aptS, C.aptW];
+    const conn = mode === 'connect' && st.sel >= 0 && st.reachMark;
+    const comp = mode === 'network' ? st.comp : null;
+    const groups = new Map();
+    for (let v = 0; v < vis.e.length; v++) {
+      const i = vis.e[v], tc = E.type[i];
+      let col, layer = 1;
+      if (comp) {
+        const id = comp.comp[i];
+        const rk = comp.rank[id], P = C.comp.length;
+        col = comp.sizes[id] <= 1 ? C.iso : rk === 0 ? C.comp[0] : C.comp[1 + ((rk - 1) % (P - 1))];
+      } else if (conn) {
+        if (st.reachMark[i]) { col = C.reach; layer = 2; } else { col = C.dim; layer = 0; }
+      } else col = typeC[tc];
+      const key = layer + '|' + col + '|' + tc;
+      let g = groups.get(key);
+      if (!g) { g = { col, layer, r: typeR[tc] * (layer === 2 ? 1.15 : 1), xs: [], ys: [] }; groups.set(key, g); }
+      g.xs.push(vis.x[v]); g.ys.push(vis.y[v]);
+    }
+    const halo = z >= 3;
+    for (const g of [...groups.values()].sort((a, b) => a.layer - b.layer || b.r - a.r)) {
+      c.beginPath();
+      for (let k = 0; k < g.xs.length; k++) { c.moveTo(g.xs[k] + g.r, g.ys[k]); c.arc(g.xs[k], g.ys[k], g.r, 0, Math.PI * 2); }
+      if (halo && g.layer) { c.lineWidth = 1.2; c.strokeStyle = C.halo; c.stroke(); }
+      c.fillStyle = g.col; c.fill();
+    }
+  }
+
+  _drawSelMarkers(c, vp) {
+    const app = this.app, st = app.st, C = this.C, S = vp.S;
+    const dot = (x, y, r, fill, stroke) => {
+      c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2);
+      c.lineWidth = 3; c.strokeStyle = C.halo; c.stroke();
+      c.fillStyle = fill; c.fill();
+      c.lineWidth = 1.8; c.strokeStyle = stroke; c.stroke();
+    };
+    if (st.route && st.route.path) {
+      const E = st.E;
+      for (const e of st.route.path) {
+        const wx = E.wx[e], y = vp.oy + E.wy[e] * S;
+        for (let k = vp.kmin; k <= vp.kmax; k++) { const x = vp.ox + (wx + k) * S; if (x > -10 && x < vp.W + 10) dot(x, y, 4, C.halo, C.route); }
+      }
+    }
+    if (st.sel >= 0 && app.ds) {
+      const a = app.ds.airports[st.sel], eligible = st.E && st.E.pos[st.sel] >= 0;
+      const wx = Merc.x(a.lon), y = vp.oy + Merc.y(a.lat) * S;
+      for (let k = vp.kmin; k <= vp.kmax; k++) {
+        const x = vp.ox + (wx + k) * S;
+        if (x < -10 || x > vp.W + 10) continue;
+        dot(x, y, 6.5, eligible ? C.sel : C.halo, C.sel);
+      }
+    }
+  }
+
+  _drawLabels(c, vp, vis) {
+    const app = this.app, st = app.st, E = st.E, A = app.ds.airports, C = this.C;
+    const occ = new Set(), CW = 12, CH = 12;
+    c.textBaseline = 'middle';
+    const place = (x, y, text, strong) => {
+      c.font = (strong ? '700 12px ' : '400 10.5px ') + FONT_STACK;
+      const w = c.measureText(text).width;
+      const x0 = x + (strong ? 9 : 5), x1 = x0 + w, y0 = y - 7, y1 = y + 7;
+      if (x1 < 0 || x0 > vp.W || y1 < 0 || y0 > vp.H) return false;
+      const a0 = Math.floor(x0 / CW), a1 = Math.floor(x1 / CW), b0 = Math.floor(y0 / CH), b1 = Math.floor(y1 / CH);
+      if (!strong) for (let a = a0; a <= a1; a++) for (let b = b0; b <= b1; b++) if (occ.has(a * 100003 + b)) return false;
+      for (let a = a0; a <= a1; a++) for (let b = b0; b <= b1; b++) occ.add(a * 100003 + b);
+      c.lineWidth = 3; c.strokeStyle = C.halo; c.strokeText(text, x0, y);
+      c.fillStyle = C.ink; c.fillText(text, x0, y);
+      return true;
+    };
+    const S = vp.S;
+    if (st.sel >= 0) {
+      const a = A[st.sel], wx = Merc.x(a.lon), y = vp.oy + Merc.y(a.lat) * S;
+      for (let k = vp.kmin; k <= vp.kmax; k++) place(vp.ox + (wx + k) * S, y, a.ident, true);
+    }
+    if (st.route && st.route.path) {
+      for (const e of st.route.path) {
+        const y = vp.oy + E.wy[e] * S;
+        for (let k = vp.kmin; k <= vp.kmax; k++) place(vp.ox + (E.wx[e] + k) * S, y, A[E.idx[e]].ident, true);
+      }
+    }
+    if (this.z < 5.5 || !E) return;
+    const order = [];
+    for (let v = 0; v < vis.e.length; v++) order.push(v);
+    const reach = st.reachMark;
+    const pri = (v) => { const i = vis.e[v]; return E.type[i] - (reach && reach[i] ? 4 : 0); };
+    order.sort((a, b) => pri(a) - pri(b));
+    let n = 0;
+    for (const v of order) {
+      if (n >= 350) break;
+      if (place(vis.x[v], vis.y[v], A[E.idx[vis.e[v]]].ident, false)) n++;
+    }
+  }
+
+  _buildHit(vp, vis) {
+    const cell = 24, grid = new Map(), st = this.app.st;
+    const add = (x, y, ai) => {
+      const key = Math.floor(x / cell) * 65536 + Math.floor(y / cell);
+      let arr = grid.get(key);
+      if (!arr) grid.set(key, (arr = []));
+      arr.push(x, y, ai);
+    };
+    if (st.E) for (let v = 0; v < vis.e.length; v++) add(vis.x[v], vis.y[v], st.E.idx[vis.e[v]]);
+    if (st.sel >= 0 && this.app.ds) {
+      const a = this.app.ds.airports[st.sel], wx = Merc.x(a.lon), y = vp.oy + Merc.y(a.lat) * vp.S;
+      for (let k = vp.kmin; k <= vp.kmax; k++) add(vp.ox + (wx + k) * vp.S, y, st.sel);
+    }
+    this.hit = { grid, cell };
+  }
+
+  hitTest(x, y, rad) {
+    if (!this.hit || this.interacting || this.anim || this.dirty) return null;
+    const { grid, cell } = this.hit;
+    let best = null, bd = rad * rad;
+    const cx = Math.floor(x / cell), cy = Math.floor(y / cell);
+    for (let a = cx - 1; a <= cx + 1; a++) for (let b = cy - 1; b <= cy + 1; b++) {
+      const arr = grid.get(a * 65536 + b);
+      if (!arr) continue;
+      for (let k = 0; k < arr.length; k += 3) {
+        const dx = arr[k] - x, dy = arr[k + 1] - y, d = dx * dx + dy * dy;
+        if (d <= bd) { bd = d; best = { ai: arr[k + 2], x: arr[k], y: arr[k + 1] }; }
+      }
+    }
+    return best;
+  }
+
+  /* ---------- navigation ---------- */
+  _changed() {
+    this.clampView();
+    this.interacting = true; this.dirty = true;
+    if (this.hover) { this.hover = null; this.app.onHover(null); }
+    clearTimeout(this.idleT);
+    this.idleT = setTimeout(() => { this.interacting = false; this.request(); this.app.onViewSettled(); }, 140);
+    this.request();
+  }
+  zoomAt(x, y, z) {
+    const S0 = this.S, wx = this.cx + (x - this.W / 2) / S0, wy = this.cy + (y - this.H / 2) / S0;
+    this.z = clamp(z, this.minZoom(), MAX_ZOOM);
+    const S = this.S;
+    this.cx = wx - (x - this.W / 2) / S; this.cy = wy - (y - this.H / 2) / S;
+    this._changed();
+  }
+  zoomBy(dz, x, y) {
+    x = x == null ? this.W / 2 : x; y = y == null ? this.H / 2 : y;
+    const S0 = this.S, wx = this.cx + (x - this.W / 2) / S0, wy = this.cy + (y - this.H / 2) / S0;
+    const tz = clamp(this.z + dz, this.minZoom(), MAX_ZOOM), St = TILE * Math.pow(2, tz);
+    this.flyToWorld(wx - (x - this.W / 2) / St, wy - (y - this.H / 2) / St, tz, 260);
+  }
+  flyToWorld(x, y, z, dur) {
+    z = clamp(z, this.minZoom(), MAX_ZOOM);
+    let dx = x - this.cx; dx -= Math.round(dx);
+    const from = { x: this.cx, y: this.cy, z: this.z }, to = { x: this.cx + dx, y, z };
+    if (REDUCED_MOTION || !dur) { this.cx = to.x; this.cy = to.y; this.z = to.z; this._changed(); return; }
+    const t0 = performance.now();
+    if (this.hover) { this.hover = null; this.app.onHover(null); }
+    this.anim = (now) => {
+      const u = clamp((now - t0) / dur, 0, 1), e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+      this.z = from.z + (to.z - from.z) * e;
+      this.cx = from.x + (to.x - from.x) * e;
+      this.cy = from.y + (to.y - from.y) * e;
+      this.clampView();
+      if (u >= 1) { this.anim = null; this.dirty = true; this.app.onViewSettled(); }
+    };
+    this.dirty = true; this.request();
+  }
+  /** Fit a geodesic circle of the given radius around a point. */
+  fitCircle(lat, lon, radius) {
+    const t = this.app.templates(Math.max(radius, 5)).get(lat);
+    const w = t.maxX - t.minX, h = t.maxY - t.minY;
+    const S = Math.min((this.W * 0.8) / w, (this.H * 0.78) / h);
+    this.flyToWorld(Merc.x(lon) + (t.minX + t.maxX) / 2, Merc.y(lat) + (t.minY + t.maxY) / 2, Math.log2(S / TILE), 650);
+  }
+  fitBounds(pts) {
+    if (!pts.length) return;
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    const ref = Merc.x(pts[0][1]);
+    for (const [la, lo] of pts) {
+      let x = Merc.x(lo); x += Math.round(ref - x);
+      const y = Merc.y(la);
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+    }
+    const S = Math.min((this.W * 0.75) / Math.max(x1 - x0, 1e-4), (this.H * 0.7) / Math.max(y1 - y0, 1e-4));
+    this.flyToWorld((x0 + x1) / 2, (y0 + y1) / 2, Math.min(Math.log2(S / TILE), 9), 650);
+  }
+
+  /* ---------- input ---------- */
+  _bind() {
+    const cv = this.cv;
+    cv.addEventListener('pointerdown', (e) => this._down(e));
+    cv.addEventListener('pointermove', (e) => this._move(e));
+    cv.addEventListener('pointerup', (e) => this._up(e, false));
+    cv.addEventListener('pointercancel', (e) => this._up(e, true));
+    cv.addEventListener('pointerleave', () => { if (!this.ptrs.size) { this.hover = null; this.app.onHover(null); this.app.onPointer(null); this.request(); } });
+    cv.addEventListener('wheel', (e) => this._wheel(e), { passive: false });
+    cv.addEventListener('dblclick', (e) => { e.preventDefault(); this.zoomBy(1, e.offsetX, e.offsetY); });
+    cv.addEventListener('keydown', (e) => this._key(e));
+    if (typeof ResizeObserver === 'function') new ResizeObserver(() => this.resize()).observe(cv.parentElement);
+    else window.addEventListener('resize', () => this.resize());
+  }
+  _down(e) {
+    if (e.button !== undefined && e.button > 0 && e.pointerType === 'mouse') return;
+    try { this.cv.setPointerCapture(e.pointerId); } catch (_) { /* ignore */ }
+    this.ptrs.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
+    if (this.anim) this.anim = null;
+    if (this.ptrs.size === 1) this.drag = { x: e.offsetX, y: e.offsetY, cx: this.cx, cy: this.cy, t: performance.now(), moved: false, shift: e.shiftKey };
+    else if (this.ptrs.size === 2) {
+      const [a, b] = [...this.ptrs.values()];
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      this.pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, z: this.z, wx: this.cx + (mx - this.W / 2) / this.S, wy: this.cy + (my - this.H / 2) / this.S };
+      this.drag = null;
+    }
+    this.cv.classList.add('grabbing');
+  }
+  _move(e) {
+    const p = this.ptrs.get(e.pointerId);
+    if (!p) { this._hoverAt(e.offsetX, e.offsetY); return; }
+    p.x = e.offsetX; p.y = e.offsetY;
+    if (this.ptrs.size >= 2 && this.pinch) {
+      const [a, b] = [...this.ptrs.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y) || 1, mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      this.z = clamp(this.pinch.z + Math.log2(d / this.pinch.d), this.minZoom(), MAX_ZOOM);
+      const S = this.S;
+      this.cx = this.pinch.wx - (mx - this.W / 2) / S; this.cy = this.pinch.wy - (my - this.H / 2) / S;
+      this._changed();
+    } else if (this.drag) {
+      const dx = e.offsetX - this.drag.x, dy = e.offsetY - this.drag.y;
+      if (!this.drag.moved && dx * dx + dy * dy < 25) return;
+      this.drag.moved = true;
+      this.cx = this.drag.cx - dx / this.S; this.cy = this.drag.cy - dy / this.S;
+      this._changed();
+    }
+  }
+  _up(e, cancel) {
+    if (!this.ptrs.delete(e.pointerId)) return;
+    if (this.ptrs.size === 1) {
+      const [q] = [...this.ptrs.values()];
+      this.pinch = null;
+      this.drag = { x: q.x, y: q.y, cx: this.cx, cy: this.cy, t: performance.now(), moved: true };
+      return;
+    }
+    if (this.ptrs.size === 0) {
+      this.cv.classList.remove('grabbing');
+      const d = this.drag;
+      this.drag = null; this.pinch = null;
+      if (d && !d.moved && !cancel && performance.now() - d.t < 800) {
+        const h = this.hitTest(e.offsetX, e.offsetY, e.pointerType === 'touch' ? 18 : 11);
+        this.app.onMapClick(h ? h.ai : -1, e.shiftKey || d.shift);
+      }
+    }
+  }
+  _wheel(e) {
+    e.preventDefault();
+    let dz = -e.deltaY * (e.deltaMode === 1 ? 0.05 : e.deltaMode === 2 ? 0.5 : 0.0022);
+    if (e.ctrlKey) dz *= 3;
+    this.zoomAt(e.offsetX, e.offsetY, this.z + clamp(dz, -1, 1));
+  }
+  _key(e) {
+    const step = 90 / this.S;
+    switch (e.key) {
+      case 'ArrowLeft': this.cx -= step; break;
+      case 'ArrowRight': this.cx += step; break;
+      case 'ArrowUp': this.cy -= step; break;
+      case 'ArrowDown': this.cy += step; break;
+      case '+': case '=': e.preventDefault(); this.zoomBy(1); return;
+      case '-': case '_': e.preventDefault(); this.zoomBy(-1); return;
+      case 'Escape': this.app.clearSelection(); return;
+      default: return;
+    }
+    e.preventDefault();
+    this._changed();
+  }
+  _hoverAt(x, y) {
+    const [lat, lon] = this.latLonAt(x, y);
+    this.app.onPointer({ lat, lon });
+    const h = this.hitTest(x, y, 9);
+    const prev = this.hover;
+    this.hover = h;
+    if ((h && h.ai) !== (prev && prev.ai)) this.request();
+    this.app.onHover(h, x, y);
+  }
+}
+/* =========================================================================
+   APPLICATION: state, recompute pipeline, controls, panels, persistence.
+   ========================================================================= */
+const $ = (id) => document.getElementById(id);
+const fmtInt = (n) => Math.round(n).toLocaleString('en-US');
+const fmt1 = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const fmtNm = (n) => (Math.abs(n - Math.round(n)) < 0.05 || n >= 100 ? fmtInt(n) : fmt1(n));
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtLat = (v) => Math.abs(v).toFixed(4) + '° ' + (v >= 0 ? 'N' : 'S');
+const fmtLon = (v) => Math.abs(v).toFixed(4) + '° ' + (v >= 0 ? 'E' : 'W');
+const brg3 = (b) => String(Math.round(b) % 360).padStart(3, '0') + '°';
+const csvCell = (v) => { const s = v == null ? '' : String(v); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+const niceNum = (x) => { const p = Math.pow(10, Math.floor(Math.log10(x))); const m = x / p; return (m >= 5 ? 5 : m >= 2 ? 2 : 1) * p; };
+const SETTINGS_KEY = 'ega-range-workbench:settings:v1';
+const SETTING_IDS = ['rangeInput', 'rmReserve', 'rmDivert', 'rmBasis', 'fMinRwy', 'fMaxElev', 'fPaved', 'fPublic', 'fPrivate', 'fUnknownRwy', 'fTypeS', 'fTypeM', 'fTypeL', 'fTypeW', 'fCountries', 'daOn', 'daRwy', 'daPct', 'daIsa', 'tgMarkers', 'tgCircles', 'tgLabels'];
+const MODE_HINT = {
+  circles: 'One geodesic range circle around every eligible airport.',
+  union: 'Area within range of at least one eligible airport. The darker inner band is within half range, where an out-and-back flight is possible.',
+  connect: 'Click an airport to see every eligible airport within one full-range leg.',
+  network: 'Links join airports within range of each other. Colors mark groups that can reach one another with recharging at every stop.',
+};
+
+/* ---------- IndexedDB (per-viewer dataset cache) ---------- */
+const Store = {
+  _db: null,
+  open() {
+    if (this._db) return Promise.resolve(this._db);
+    return new Promise((res, rej) => {
+      if (!window.indexedDB) { rej(new Error('IndexedDB unavailable')); return; }
+      const r = indexedDB.open('ega-range-workbench', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => { this._db = r.result; res(r.result); };
+      r.onerror = () => rej(r.error);
+      r.onblocked = () => rej(new Error('blocked'));
+    });
+  },
+  async tx(mode, fn) {
+    const db = await this.open();
+    return new Promise((res, rej) => {
+      const t = db.transaction('kv', mode), q = fn(t.objectStore('kv'));
+      t.oncomplete = () => res(q ? q.result : undefined);
+      t.onerror = () => rej(t.error); t.onabort = () => rej(t.error);
+    });
+  },
+  get(k) { return this.tx('readonly', (s) => s.get(k)); },
+  set(k, v) { return this.tx('readwrite', (s) => s.put(v, k)); },
+  del(k) { return this.tx('readwrite', (s) => s.delete(k)); },
+};
+
+const App = {
+  ds: null, p: null, map: null, downloads: null, searchIdx: [],
+  view: { mode: 'circles', markers: true, circles: true, labels: true },
+  st: { E: null, elig: null, rm: null, radius: 270, leg: 270, grid: null, comp: null, compPending: false, sel: -1, reach: null, reachMark: null, twoLeg: null, route: null },
+  tpl: new Map(), sort: { key: 'd', dir: 1 }, showAll: false,
+
+  templates(r) {
+    const key = Math.round(r * 100) / 100;
+    let T = this.tpl.get(key);
+    if (!T) { if (this.tpl.size > 8) this.tpl.clear(); T = new CircleTemplates(key); this.tpl.set(key, T); }
+    return T;
+  },
+
+  /* ---------- boot ---------- */
+  init() {
+    this.map = new MapView($('map'), this);
+    const saved = this.loadSettings();
+    this.syncRangeWidgets();
+    this.syncModeButtons();
+    this.syncPrivateToggle();
+    this.readView();
+    this.bindControls();
+    this.bindSearch();
+    this.bindInfo();
+    this.bindFiles();
+    this.readParams();
+    this.computeRange();
+    this.setDataset(buildDemo(DEMO_DATA), true);
+    this.map.resize();
+    if (saved && saved.view && isFinite(saved.view.z)) { Object.assign(this.map, { cx: saved.view.cx, cy: saved.view.cy, z: saved.view.z }); this.map.clampView(); }
+    else { this.map.z = this.map.minZoom() + 0.15; this.map.cx = Merc.x(-25); this.map.cy = Merc.y(30); this.map.clampView(); }
+    this.map.invalidate();
+    this.restoreDataset();
+    this.loadBasemap();
+    this.initCapabilities();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this.map.invalidate());
+    const mq = matchMedia('(prefers-color-scheme: dark)');
+    const recolor = () => { this.map.readColors(); this.renderLegend(); };
+    if (mq.addEventListener) mq.addEventListener('change', recolor);
+    new MutationObserver(recolor).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+  },
+
+  /* ---------- parameters ---------- */
+  readParams() {
+    const n = (id, d) => { const v = parseFloat($(id).value); return isFinite(v) ? v : d; };
+    const c = (id) => $(id).checked;
+    this.p = {
+      range: clamp(n('rangeInput', 270), 1, 5000),
+      reservePct: clamp(n('rmReserve', 0), 0, 95), divertNmi: Math.max(0, n('rmDivert', 0)), basis: $('rmBasis').value,
+      minRwy: Math.max(0, n('fMinRwy', 0)), maxElev: n('fMaxElev', 15000),
+      paved: c('fPaved'), publicOnly: c('fPublic'), includePrivate: c('fPrivate'), unknownRwy: c('fUnknownRwy'),
+      types: { S: c('fTypeS'), M: c('fTypeM'), L: c('fTypeL') }, seaplane: c('fTypeW'),
+      countries: $('fCountries').value,
+      da: { on: c('daOn'), slRwy: n('daRwy', 2000), pct: n('daPct', 10), isaDev: n('daIsa', 15) },
+    };
+  },
+  readView() {
+    this.view.markers = $('tgMarkers').checked; this.view.circles = $('tgCircles').checked; this.view.labels = $('tgLabels').checked;
+  },
+  computeRange() {
+    const rm = RangeModel.compute(this.p);
+    this.st.rm = rm;
+    this.st.leg = Math.max(1, rm.usable);
+    this.st.radius = Math.max(0.5, rm.radius);
+    this.renderChain();
+  },
+  computeEligibility() {
+    const res = evaluateEligibility(this.ds.airports, this.p);
+    this.st.elig = res;
+    this.st.E = buildEligible(this.ds.airports, res.keep);
+    this.renderFunnel();
+  },
+  rebuildGraph() {
+    const st = this.st;
+    st.grid = st.E && st.E.n ? new SphereGrid(st.E, st.leg) : null;
+    st.comp = null;
+    this.scheduleDeferred();
+  },
+  scheduleDeferred() {
+    clearTimeout(this._defT);
+    this.st.compPending = true;
+    const tok = (this._defTok = (this._defTok || 0) + 1);
+    this._defT = setTimeout(() => {
+      if (tok !== this._defTok) return;
+      const st = this.st;
+      st.comp = st.grid ? computeComponents(st.E, st.grid) : null;
+      st.compPending = false;
+      if (st.route && st.route.dest != null && st.sel >= 0) this.computeRoute(st.route.dest, true);
+      this.renderInfo(); this.renderLegend();
+      if (this.view.mode === 'network' || (st.route && st.route.path)) this.map.invalidate();
+    }, 240);
+  },
+  delay() { return this.map.lastRenderMs > 45 ? 80 : 0; },
+  onRangeChange() {
+    this.readParams(); this.computeRange(); this.rebuildGraph(); this.refreshSelection();
+    this.renderInfo(); this.renderLegend(); this.syncPresets();
+    this.map.invalidate(this.delay()); this.saveSettings();
+  },
+  onEligChange() {
+    this.readParams(); this.syncPrivateToggle(); this.computeEligibility(); this.rebuildGraph(); this.refreshSelection();
+    this.renderInfo(); this.renderLegend();
+    this.map.invalidate(this.delay()); this.saveSettings();
+  },
+  onViewChange() {
+    this.readView(); this.syncModeButtons(); this.renderLegend(); this.renderInfo();
+    this.map.invalidate(); this.saveSettings();
+  },
+
+  /* ---------- dataset ---------- */
+  setDataset(ds, quiet) {
+    this.ds = ds;
+    this.searchIdx = ds.airports.map((a) => (a.name + ' ' + a.city).toUpperCase());
+    this.st.sel = -1; this.st.route = null; this.st.reach = null; this.st.reachMark = null;
+    this.computeEligibility(); this.rebuildGraph();
+    this.renderDataState(); this.renderInfo(); this.renderLegend();
+    $('useNote').hidden = ds.meta.source !== 'ourairports' && ds.meta.source !== 'demo';
+    this.map.invalidate();
+    if (!quiet) this.saveSettings();
+  },
+  async restoreDataset() {
+    try {
+      const rec = await Store.get('dataset');
+      if (this._userLoaded || !rec || rec.v !== 1 || !Array.isArray(rec.airports) || !rec.airports.length) return;
+      this.setDataset({ airports: rec.airports, meta: rec.meta }, true);
+      this.toast('Restored ' + rec.meta.label + ' from this browser: ' + fmtInt(rec.airports.length) + ' airports.', 5000);
+    } catch (_) { /* storage is optional */ }
+  },
+  async loadFiles(list) {
+    const files = [...list].filter((f) => /\.(csv|tsv|txt)$/i.test(f.name) || /csv|text/.test(f.type));
+    if (!files.length) { this.toast('Choose CSV files, such as airports.csv and runways.csv from OurAirports.', 6000); return; }
+    this.toast('Reading ' + files.map((f) => f.name).join(' and ') + '…', 120000);
+    await new Promise((r) => setTimeout(r, 40));
+    try {
+      const texts = await Promise.all(files.map((f) => f.text().then((text) => ({ name: f.name, text }))));
+      let air = null, rwy = null, gen = null;
+      for (const f of texts) {
+        const head = f.text.slice(0, 4000).split(/\r?\n/)[0].toLowerCase();
+        if (head.includes('airport_ref') && head.includes('length_ft')) rwy = f;
+        else if (head.includes('latitude_deg') && head.includes('ident') && head.includes('type')) air = f;
+        else if (!gen) gen = f;
+      }
+      if (!air && !gen) throw new Error('runways.csv needs airports.csv. Select both files together.');
+      this.toast('Parsing ' + (air ? 'OurAirports data' : gen.name) + '…', 120000);
+      await new Promise((r) => setTimeout(r, 40));
+      const t0 = performance.now();
+      const ds = air ? buildFromOurAirports(parseCSV(air.text), rwy ? parseCSV(rwy.text) : null, 'OurAirports')
+        : buildFromGeneric(parseCSV(gen.text, detectDelimiter(gen.text)), gen.name);
+      this._userLoaded = true;
+      this.setDataset(ds);
+      let msg = 'Loaded ' + fmtInt(ds.airports.length) + ' airports in ' + ((performance.now() - t0) / 1000).toFixed(1) + ' s.';
+      if (air && !rwy) msg += ' No runways.csv was included, so runway filters treat every airport as unknown. Add runways.csv, or tick “Keep airports with no runway data”.';
+      this.toast(msg, 9000);
+      try { await Store.set('dataset', { v: 1, meta: ds.meta, airports: ds.airports }); } catch (_) { /* optional */ }
+    } catch (err) {
+      this.toast('Could not load the data: ' + (err && err.message ? err.message : String(err)), 10000);
+    }
+  },
+  async useDemo() {
+    this._userLoaded = true;
+    this.setDataset(buildDemo(DEMO_DATA));
+    try { await Store.del('dataset'); } catch (_) { /* optional */ }
+    this.toast('Switched to the built-in sample. The stored dataset was removed from this browser.', 5000);
+  },
+
+  /* ---------- selection, reach, routes ---------- */
+  select(ai, opts) {
+    opts = opts || {};
+    if (ai < 0) { this.clearSelection(); return; }
+    const st = this.st;
+    if (st.sel !== ai) { st.route = null; this.showAll = false; }
+    st.sel = ai;
+    this.refreshSelection();
+    this.renderInfo(true);
+    this.map.resize();
+    const a = this.ds.airports[ai];
+    if (opts.fly) this.map.fitCircle(a.lat, a.lon, Math.max(st.radius, st.leg));
+    else if (opts.pan) this.map.flyToWorld(Merc.x(a.lon), Merc.y(a.lat), this.map.z, 450);
+    this.map.invalidate(); this.renderLegend();
+  },
+  clearSelection() {
+    const st = this.st;
+    if (st.sel < 0) return;
+    st.sel = -1; st.reach = null; st.reachMark = null; st.route = null; st.twoLeg = null;
+    this.renderInfo(); this.renderLegend(); this.map.resize();
+  },
+  refreshSelection() {
+    const st = this.st;
+    if (st.sel < 0 || !st.E) { st.reach = null; st.reachMark = null; st.twoLeg = null; return; }
+    const a = this.ds.airports[st.sel], self = st.E.pos[st.sel];
+    st.reach = reachFrom(st.E, a.lat, a.lon, st.leg, self);
+    st.reachMark = new Uint8Array(st.E.n);
+    for (const r of st.reach.list) st.reachMark[r.e] = 1;
+    if (self >= 0) st.reachMark[self] = 1;
+    st.twoLeg = st.grid && st.reach.list.length <= 8000 ? twoLegCount(st.E, st.grid, st.reach.list, self) : null;
+  },
+  onMapClick(ai, shift) {
+    if (ai < 0) return;
+    if (shift && this.st.sel >= 0 && ai !== this.st.sel) { this.computeRoute(ai); return; }
+    this.select(ai);
+  },
+  computeRoute(destAi, silent) {
+    const st = this.st, A = this.ds.airports;
+    if (st.sel < 0 || !st.grid) return;
+    const s = st.E.pos[st.sel], t = st.E.pos[destAi];
+    if (s < 0 || t < 0) {
+      st.route = { dest: destAi, path: null, msg: A[s < 0 ? st.sel : destAi].ident + ' is not eligible under the current filters, so it cannot be a route endpoint.' };
+    } else {
+      const t0 = performance.now();
+      const r = findRoute(st.E, st.grid, s, t, st.leg);
+      st.route = Object.assign({ dest: destAi, ms: performance.now() - t0 }, r);
+      if (!r.path) st.route.msg = r.aborted ? 'The search stopped after ' + fmtInt(r.expanded) + ' airports without reaching ' + A[destAi].ident + '.'
+        : A[destAi].ident + ' cannot be reached with ' + fmtNm(st.leg) + ' nmi legs, even with recharging at every stop.';
+    }
+    if (silent) return;
+    this.renderInfo(); this.map.invalidate();
+    if (st.route.path) this.map.fitBounds(st.route.path.map((e) => [st.E.lat[e], st.E.lon[e]]));
+  },
+  findAirport(q) {
+    q = String(q || '').trim().toUpperCase();
+    if (!q) return -1;
+    const A = this.ds.airports;
+    for (let i = 0; i < A.length; i++) { const a = A[i]; if (a.ident === q || a.icao === q || a.iata === q) return i; }
+    const r = this.search(q);
+    return r.length ? r[0] : -1;
+  },
+  search(q) {
+    q = String(q || '').trim().toUpperCase();
+    if (!q) return [];
+    const A = this.ds.airports, E = this.st.E, idx = this.searchIdx;
+    const exact = [], pre = [], name = [];
+    for (let i = 0; i < A.length; i++) {
+      const a = A[i];
+      if (a.ident === q || a.icao === q || a.iata === q || (a.local && a.local === q)) exact.push(i);
+      else if (pre.length < 60 && (a.ident.startsWith(q) || (a.iata && a.iata.startsWith(q)))) pre.push(i);
+      else if (q.length >= 3 && name.length < 80 && idx[i].includes(q)) name.push(i);
+    }
+    const rank = { L: 0, M: 1, S: 2, W: 3 };
+    const key = (i) => (E && E.pos[i] >= 0 ? 0 : 10) + (rank[A[i].type] == null ? 4 : rank[A[i].type]);
+    const by = (x, y) => key(x) - key(y);
+    return [...exact.sort(by), ...pre.sort(by), ...name.sort(by)].slice(0, 12);
+  },
+
+  /* ---------- rendering of panels ---------- */
+  renderChain() {
+    const rm = this.st.rm;
+    let s = '';
+    if (rm.reserveFrac > 0 || rm.divert > 0) {
+      s = fmtNm(rm.max) + ' × (1 − ' + Math.round(rm.reserveFrac * 100) + '%)' + (rm.divert > 0 ? ' − ' + fmtNm(rm.divert) : '') + ' = ';
+    }
+    $('rangeChain').innerHTML = 'Usable range ' + s + '<b>' + fmtNm(rm.usable) + ' nmi</b>. Circles show <b>' + fmtNm(rm.radius) + ' nmi</b>' +
+      (rm.basis === 'action' ? ', half the usable range (out and back).' : ', the full one-way reach.');
+  },
+  renderFunnel() {
+    const r = this.st.elig, m = this.ds.meta;
+    let h = '<div class="row"><span>Airports in dataset</span><span>' + fmtInt(r.total) + '</span></div>';
+    CONSTRAINTS.forEach((c, i) => { if (r.rejected[i]) h += '<div class="row"><span>Removed by ' + esc(c.label.toLowerCase()) + '</span><span>−' + fmtInt(r.rejected[i]) + '</span></div>'; });
+    h += '<div class="row total"><span>Eligible airports</span><span>' + fmtInt(r.keep.length) + '</span></div>';
+    if (m.dropped) h += '<div class="row"><span>Heliports, balloonports and closed sites skipped at import: ' + fmtInt(m.dropped) + '</span><span></span></div>';
+    $('funnel').innerHTML = h;
+  },
+  renderDataState() {
+    const m = this.ds.meta, n = this.ds.airports.length;
+    let h;
+    if (m.source === 'demo') h = '<b>Built-in sample</b>, ' + fmtInt(n) + ' airports with approximate, hand-entered values for trying the tool. <span class="badge warn">Not for analysis</span>';
+    else h = '<b>' + esc(m.label) + '</b>, ' + fmtInt(n) + ' airports' + (m.hasRunways ? ' with runway data' : ', no runway file') + (m.loadedAt ? ', loaded ' + new Date(m.loadedAt).toLocaleDateString() : '') + '.';
+    $('dataState').innerHTML = h;
+    $('useDemo').hidden = m.source === 'demo';
+  },
+  renderLegend() {
+    const C = this.map.C, st = this.st, mode = this.view.mode;
+    const dot = (col, sz) => '<span class="sw" style="width:' + sz + 'px;height:' + sz + 'px;border-radius:50%;margin:auto;background:' + col + '"></span>';
+    const row = (sw, txt) => '<div class="li">' + sw + '<span>' + txt + '</span></div>';
+    let h = '';
+    if (mode === 'circles') h += row('<span class="sw" style="border:1.5px solid ' + C.ring + ';border-radius:50%;background:' + C.ringFill + '"></span>', 'Range circle, ' + fmtNm(st.radius) + ' nmi radius');
+    if (mode === 'union') {
+      h += row('<span class="sw" style="background:' + C.unionFill + ';border-top:2px solid ' + C.unionEdge + '"></span>', 'Within ' + fmtNm(st.radius) + ' nmi of an eligible airport');
+      h += row('<span class="sw" style="background:' + C.unionFill + ';box-shadow:inset 0 0 0 12px ' + C.unionInner + '"></span>', 'Within ' + fmtNm(st.radius / 2) + ' nmi, out and back');
+    }
+    if (mode === 'connect') {
+      if (st.sel < 0) h += '<div class="note">Click an airport to show its one-leg connections.</div>';
+      else {
+        h += row(dot(C.sel, 11), esc(this.ds.airports[st.sel].ident) + ' and its ' + fmtNm(st.leg) + ' nmi reach');
+        h += row(dot(C.reach, 8), 'Reachable in one leg (' + fmtInt(st.reach ? st.reach.list.length : 0) + ')');
+        h += row(dot(C.dim, 7), 'Out of reach');
+      }
+    }
+    if (mode === 'network') {
+      h += row('<span class="sw" style="border-top:1.5px solid ' + C.net + ';height:0;margin-top:6px"></span>', 'Airports within ' + fmtNm(st.leg) + ' nmi of each other');
+      if (st.comp) {
+        const cm = st.comp;
+        h += row(dot(C.comp[0], 9), 'Largest network, ' + fmtInt(cm.largest) + ' airports');
+        if (cm.count - cm.isolated > 1) h += row('<span class="sw" style="background:linear-gradient(90deg,' + C.comp.slice(1, 5).join(',') + ');height:8px;border-radius:4px"></span>', fmtInt(cm.count - cm.isolated - 1) + ' other networks, colors repeat');
+        if (cm.isolated) h += row(dot(C.iso, 8), fmtInt(cm.isolated) + ' isolated airports');
+      } else h += '<div class="note">Finding networks…</div>';
+    }
+    if (mode === 'circles' || mode === 'union' || (mode === 'connect' && st.sel < 0)) {
+      h += row(dot(C.aptL, 9), 'Large airport') + row(dot(C.aptM, 8), 'Medium airport') + row(dot(C.aptS, 6), 'Small airport');
+      if (this.p.seaplane) h += row(dot(C.aptW, 7), 'Seaplane base');
+    }
+    if (st.route && st.route.path) h += row('<span class="sw" style="border-top:3px solid ' + C.route + ';height:0;margin-top:5px"></span>', 'Route with recharging');
+    $('legend').innerHTML = h;
+    $('modeHint').textContent = MODE_HINT[mode];
+  },
+  renderInfo(scrollTop) {
+    const el = $('info'), st = this.st;
+    if (st.sel < 0 || !this.ds) { el.hidden = true; el.innerHTML = ''; return; }
+    const A = this.ds.airports, a = A[st.sel], E = st.E, p = this.p;
+    const eligible = E.pos[st.sel] >= 0;
+    const why = eligible ? '' : whyIneligible(a, p);
+    const useTxt = a.use === 'public' ? 'public use' : a.use === 'private' ? 'private use' : 'use unknown';
+    const kind = [TYPE_LABEL[a.type] || 'Airport', useTxt + (a.useBasis === 'inferred' && a.use !== 'unknown' ? ' (inferred)' : ''), a.country].filter(Boolean).join(', ');
+    const surfTxt = (cls, raw) => (raw && !/^(paved|unpaved|water)$/i.test(raw) ? esc(raw) + ', ' : '') + (cls === 'paved' ? 'paved' : cls === 'unpaved' ? 'unpaved' : cls === 'water' ? 'water' : 'surface unknown');
+    let rwy = 'No data';
+    if (a.rwy != null) rwy = fmtInt(a.rwy) + ' ft, ' + surfTxt(a.rwyCls, a.rwySurf) + (a.rwyW ? ', ' + fmtInt(a.rwyW) + ' ft wide' : '');
+    else if (a.water) rwy = 'Water lane ' + fmtInt(a.water) + ' ft';
+    const codes = [a.icao && 'ICAO ' + a.icao, a.iata && 'IATA ' + a.iata, a.local && a.local !== a.ident && a.local !== a.iata && 'local ' + a.local].filter(Boolean).join(', ');
+    const req = requiredRunwayFt(a, p);
+    let h = '<div class="head"><div class="grow"><div class="ident">' + esc(a.ident) + '</div><div class="name">' + esc(a.name) + '</div><div class="kind">' + esc(kind) + '</div></div>' +
+      '<button class="closex" data-act="close" aria-label="Clear selection">×</button></div>';
+    h += '<div class="elig' + (eligible ? '' : ' no') + '">' + (eligible ? 'Eligible under the current filters.' : 'Not eligible: ' + esc(why) + '.') + '</div>';
+    h += '<dl class="facts"><dt>Position</dt><dd>' + fmtLat(a.lat) + ', ' + fmtLon(a.lon) + '</dd>' +
+      '<dt>Elevation</dt><dd>' + (a.elev == null ? 'No data' : fmtInt(a.elev) + ' ft') + '</dd>' +
+      '<dt>Longest runway</dt><dd>' + rwy + '</dd>' +
+      (a.rwyPaved != null && a.rwy != null && a.rwyPaved !== a.rwy ? '<dt>Longest paved</dt><dd>' + (a.rwyPaved ? fmtInt(a.rwyPaved) + ' ft' : 'None') + '</dd>' : '') +
+      '<dt>Runway required</dt><dd>' + fmtInt(req) + ' ft' + (p.da.on ? ' (density altitude ' + fmtInt(densityAltitudeFt(a.elev, p.da.isaDev)) + ' ft)' : '') + '</dd>' +
+      (codes ? '<dt>Codes</dt><dd>' + esc(codes) + '</dd>' : '') +
+      (a.city || a.region ? '<dt>Location</dt><dd>' + esc([a.city, a.region].filter(Boolean).join(', ')) + '</dd>' : '') + '</dl>';
+
+    const rl = st.reach ? st.reach.list : [];
+    const legTxt = fmtNm(st.leg);
+    h += '<div class="reachbox"><h3>Reach with a ' + legTxt + ' nmi leg</h3>';
+    h += '<div class="reachline"><span class="v">' + fmtInt(rl.length) + '</span><span>eligible airports within one leg</span></div>';
+    h += '<div class="reachline"><span class="v small">' + (st.twoLeg == null ? '—' : fmtInt(st.twoLeg)) + '</span><span>within two legs, recharging once</span></div>';
+    let net = '—';
+    if (st.comp && eligible) net = fmtInt(st.comp.sizes[st.comp.comp[E.pos[st.sel]]] - 1);
+    else if (st.compPending) net = '…';
+    h += '<div class="reachline"><span class="v small">' + net + '</span><span>' + (eligible ? 'reachable with any number of recharging stops' : 'network size applies to eligible airports only') + '</span></div>';
+    if (st.reach && st.reach.nearest >= 0) {
+      const ne = st.reach.nearest;
+      h += '<p class="hint">Nearest eligible airport: <b>' + esc(A[E.idx[ne]].ident) + '</b> at ' + fmt1(st.reach.nearestD) + ' nmi' + (st.reach.nearestD > st.leg ? ', beyond one leg.' : '.') + '</p>';
+    }
+    h += '<div class="btnrow"><button class="btn" data-act="zoom">Zoom to range</button>' + (this.view.mode !== 'connect' ? '<button class="btn" data-act="connect">Show connections</button>' : '') + '</div></div>';
+
+    h += '<div class="route"><h3>Route with recharging at every stop</h3>' +
+      '<div class="routeform"><input class="textfield" id="routeTo" type="text" placeholder="Destination ICAO, IATA or name" aria-label="Route destination" autocomplete="off" spellcheck="false" value="' + esc(st.route ? A[st.route.dest].ident : '') + '"><button class="btn solid" data-act="route">Find route</button></div>' +
+      '<p class="hint">Fewest legs first, then shortest distance. Shift-click an airport on the map to route to it.</p>';
+    if (st.route) {
+      const r = st.route;
+      if (r.path) {
+        h += '<p class="hint"><b>' + fmtInt(r.legs) + ' leg' + (r.legs === 1 ? '' : 's') + '</b>, ' + fmtInt(r.legs - 1) + ' recharging stop' + (r.legs === 2 ? '' : 's') + ', ' + fmtInt(r.total) + ' nmi total, longest leg ' + fmt1(r.longest) + ' nmi.</p><ol class="legs">';
+        for (let i = 1; i < r.path.length; i++) {
+          const u = r.path[i - 1], v = r.path[i];
+          h += '<li><span>' + esc(A[E.idx[u]].ident) + ' to ' + esc(A[E.idx[v]].ident) + '</span><span>' + fmt1(Geo.dist(E.lat[u], E.lon[u], E.lat[v], E.lon[v])) + ' nmi</span></li>';
+        }
+        h += '</ol><div class="btnrow"><button class="btn" data-act="clearRoute">Clear route</button></div>';
+      } else h += '<p class="hint">' + esc(r.msg) + '</p>';
+    }
+    h += '</div>';
+
+    h += '<div class="tablehead"><h3>Airports within one leg (' + fmtInt(rl.length) + ')</h3>' + (rl.length ? '<button class="btn" data-act="csv">' + (this.downloads ? 'Download CSV' : 'Copy CSV') + '</button>' : '') + '</div>';
+    if (!rl.length) h += '<p class="empty">No eligible airport lies within ' + legTxt + ' nmi. Increase the range or relax the eligibility filters.</p>';
+    else {
+      const rows = this.sortedReach();
+      const lim = this.showAll ? rows.length : Math.min(rows.length, 250);
+      const th = (k, label, num) => {
+        const on = this.sort.key === k;
+        return '<th class="' + (num ? 'n' : '') + '" aria-sort="' + (on ? (this.sort.dir > 0 ? 'ascending' : 'descending') : 'none') + '"><button data-sort="' + k + '">' + label + (on ? (this.sort.dir > 0 ? ' ▲' : ' ▼') : '') + '</button></th>';
+      };
+      h += '<div class="tablewrap"><table class="rt"><thead><tr>' + th('id', 'Ident') + th('nm', 'Name') + th('d', 'nmi', 1) + th('b', 'Brg', 1) + th('r', 'Rwy ft', 1) + th('e', 'Elev ft', 1) + '</tr></thead><tbody>';
+      for (let k = 0; k < lim; k++) {
+        const r = rows[k], b = A[E.idx[r.e]];
+        h += '<tr tabindex="0" data-ai="' + E.idx[r.e] + '"><td>' + esc(b.ident) + '</td><td class="nm" title="' + esc(b.name) + '">' + esc(b.name) + '</td><td class="n">' + fmt1(r.d) + '</td><td class="n">' + brg3(r.b) + '</td><td class="n">' + (b.rwy == null ? '—' : fmtInt(b.rwy)) + '</td><td class="n">' + (b.elev == null ? '—' : fmtInt(b.elev)) + '</td></tr>';
+      }
+      h += '</tbody></table></div>';
+      if (rows.length > lim) h += '<div class="more"><button class="btn" data-act="more">Show all ' + fmtInt(rows.length) + '</button></div>';
+    }
+    const keepScroll = scrollTop ? 0 : el.scrollTop;
+    const focusRoute = document.activeElement && document.activeElement.id === 'routeTo';
+    el.innerHTML = h;
+    el.hidden = false;
+    el.scrollTop = keepScroll;
+    if (focusRoute) { const ri = $('routeTo'); ri.focus(); ri.setSelectionRange(ri.value.length, ri.value.length); }
+  },
+  sortedReach() {
+    const st = this.st, E = st.E, A = this.ds.airports, a = A[st.sel];
+    const rows = st.reach.list.map((r) => ({ e: r.e, d: r.d, b: Geo.bearing(a.lat, a.lon, E.lat[r.e], E.lon[r.e]) }));
+    const { key, dir } = this.sort;
+    const val = (r) => {
+      const b = A[E.idx[r.e]];
+      switch (key) {
+        case 'id': return b.ident; case 'nm': return b.name; case 'b': return r.b;
+        case 'r': return b.rwy == null ? -1 : b.rwy; case 'e': return b.elev == null ? -1e9 : b.elev; default: return r.d;
+      }
+    };
+    rows.sort((x, y) => { const u = val(x), v = val(y); return (u < v ? -1 : u > v ? 1 : x.d - y.d) * dir; });
+    return rows;
+  },
+
+  /* ---------- exports ---------- */
+  reachCsv() {
+    const st = this.st, E = st.E, A = this.ds.airports, a = A[st.sel];
+    const lines = ['origin,ident,iata,name,country,lat,lon,distance_nmi,initial_bearing_deg_true,longest_runway_ft,longest_paved_runway_ft,elevation_ft,type,use'];
+    for (const r of this.sortedReach()) {
+      const b = A[E.idx[r.e]];
+      lines.push([a.ident, b.ident, b.iata, b.name, b.country, b.lat.toFixed(5), b.lon.toFixed(5), r.d.toFixed(2), r.b.toFixed(1), b.rwy, b.rwyPaved, b.elev, TYPE_LABEL[b.type], b.use].map(csvCell).join(','));
+    }
+    return lines.join('\n') + '\n';
+  },
+  eligibleCsv() {
+    const E = this.st.E, A = this.ds.airports;
+    const lines = ['ident,iata,name,country,region,lat,lon,elevation_ft,type,longest_runway_ft,longest_paved_runway_ft,surface,use,use_basis'];
+    for (let k = 0; k < E.n; k++) {
+      const b = A[E.idx[k]];
+      lines.push([b.ident, b.iata, b.name, b.country, b.region, b.lat.toFixed(5), b.lon.toFixed(5), b.elev, TYPE_LABEL[b.type], b.rwy, b.rwyPaved, b.rwySurf, b.use, b.useBasis].map(csvCell).join(','));
+    }
+    return lines.join('\n') + '\n';
+  },
+  async saveText(name, text) {
+    if (this.downloads) {
+      try { await this.downloads.save({ filename: name, data: text }); this.toast('Saved ' + name + '.'); return; }
+      catch (e) {
+        const code = e && e.code;
+        if (code === 'declined') return;
+        if (code === 'rate_limited') { this.toast('A save prompt is already open.'); return; }
+      }
+    }
+    try { await navigator.clipboard.writeText(text); this.toast('Copied ' + name + ' to the clipboard.'); }
+    catch (_) { this.toast('Saving and copying are both unavailable in this view.'); }
+  },
+  async initCapabilities() {
+    try {
+      if (window.claude && typeof window.claude.use === 'function') {
+        const d = await window.claude.use('downloads');
+        if (d) this.downloads = d;
+      }
+    } catch (_) { /* capability optional */ }
+    $('exportElig').textContent = this.downloads ? 'Download eligible airports (CSV)' : 'Copy eligible airports (CSV)';
+    this.renderInfo();
+  },
+
+  /* ---------- map callbacks ---------- */
+  onFrame(m) {
+    const lat = Merc.lat(m.cy);
+    const nmPx = (2 * Math.PI * EARTH_R_NMI * Math.cos(lat * DEG)) / m.S;
+    const nice = niceNum(nmPx * 120), px = nice / nmPx;
+    const key = nice + '|' + Math.round(px);
+    if (key !== this._scaleKey) {
+      this._scaleKey = key;
+      const km = nice * 1.852;
+      $('scale').innerHTML = '<div>' + (nice >= 1 ? fmtInt(nice) : nice) + ' nmi <span class="km">(' + (km >= 10 ? fmtInt(km) : km.toFixed(1)) + ' km) at ' + Math.abs(lat).toFixed(0) + '°' + (lat >= 0 ? 'N' : 'S') + '</span></div><div class="bar" style="width:' + Math.round(px) + 'px"></div>';
+    }
+  },
+  onRendered(info, ms) {
+    const E = this.st.E;
+    let s = fmtInt(E ? E.n : 0) + ' eligible, ' + fmtInt(info.visible || 0) + ' in view';
+    if (info.circles) s += ', ' + fmtInt(info.circles) + ' circles';
+    if (info.links) s += ', ' + fmtInt(info.links) + ' links' + (info.sparse ? ' (nearest ' + info.sparse + ' per airport)' : '');
+    s += ', ' + Math.max(1, Math.round(ms)) + ' ms';
+    $('perf').textContent = s;
+  },
+  onPointer(pt) {
+    const el = $('readout');
+    if (!pt) { el.textContent = 'Move over the map for coordinates'; return; }
+    let s = fmtLat(pt.lat) + '  ' + fmtLon(pt.lon);
+    if (this.st.sel >= 0) {
+      const a = this.ds.airports[this.st.sel];
+      s += '   ' + fmt1(Geo.dist(a.lat, a.lon, pt.lat, pt.lon)) + ' nmi from ' + a.ident + ' on ' + brg3(Geo.bearing(a.lat, a.lon, pt.lat, pt.lon)) + ' true';
+    }
+    el.textContent = s;
+  },
+  onHover(h, x, y) {
+    const tip = $('tip');
+    if (!h) { tip.hidden = true; return; }
+    const A = this.ds.airports, a = A[h.ai], st = this.st;
+    const eligible = st.E && st.E.pos[h.ai] >= 0;
+    let s = '<b>' + esc(a.ident) + '</b> ' + esc(a.name) + '<div class="m">' + (a.rwy != null ? 'Runway ' + fmtInt(a.rwy) + ' ft' + (a.rwyCls === 'paved' ? ' paved' : a.rwyCls === 'unpaved' ? ' unpaved' : '') : 'No runway data') + ', elevation ' + (a.elev == null ? '?' : fmtInt(a.elev) + ' ft') + '</div>';
+    if (st.sel >= 0 && h.ai !== st.sel) {
+      const o = A[st.sel], d = Geo.dist(o.lat, o.lon, a.lat, a.lon);
+      s += '<div class="m">' + fmt1(d) + ' nmi from ' + esc(o.ident) + (d <= st.leg ? ', within one leg' : ', beyond one leg') + '. Shift-click to route.</div>';
+    }
+    if (!eligible) s += '<div class="m">Not eligible under the current filters</div>';
+    tip.innerHTML = s;
+    tip.hidden = false;
+    const W = this.map.W, H = this.map.H, tw = tip.offsetWidth, th = tip.offsetHeight;
+    let lx = x + 14, ly = y + 14;
+    if (lx + tw > W - 8) lx = x - tw - 14;
+    if (ly + th > H - 30) ly = y - th - 14;
+    tip.style.left = Math.max(4, lx) + 'px'; tip.style.top = Math.max(4, ly) + 'px';
+  },
+  onViewSettled() { this.saveSettings(); },
+
+  /* ---------- toast ---------- */
+  toast(msg, ms) {
+    const t = $('toast');
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(this._toastT);
+    this._toastT = setTimeout(() => { t.hidden = true; }, ms || 3500);
+  },
+
+  /* ---------- settings ---------- */
+  saveSettings() {
+    clearTimeout(this._saveT);
+    this._saveT = setTimeout(() => {
+      const s = { v: 1, inputs: {}, mode: this.view.mode, view: { cx: this.map.cx, cy: this.map.cy, z: this.map.z } };
+      for (const id of SETTING_IDS) { const el = $(id); s.inputs[id] = el.type === 'checkbox' ? el.checked : el.value; }
+      try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch (_) { /* optional */ }
+    }, 400);
+  },
+  loadSettings() {
+    let s = null;
+    try { s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null'); } catch (_) { s = null; }
+    if (!s || s.v !== 1 || !s.inputs) return null;
+    for (const id of SETTING_IDS) {
+      const el = $(id);
+      if (!el || !(id in s.inputs)) continue;
+      if (el.type === 'checkbox') el.checked = !!s.inputs[id]; else el.value = s.inputs[id];
+    }
+    if (s.mode && MODE_HINT[s.mode]) this.view.mode = s.mode;
+    if ($('rmReserve').value !== '0' || $('rmDivert').value !== '0' || $('rmBasis').value !== 'oneway') $('advRange').open = true;
+    if ($('daOn').checked) $('advTO').open = true;
+    return s;
+  },
+
+  /* ---------- widget sync ---------- */
+  sizeRangeInput() {
+    const ri = $('rangeInput');
+    ri.style.width = Math.max(2, String(ri.value || '').length) + 0.25 + 'ch';
+  },
+  syncRangeWidgets() {
+    this.sizeRangeInput();
+    const v = clamp(parseFloat($('rangeInput').value) || 270, 10, 5000);
+    const sl = $('rangeSlider');
+    sl.value = Math.min(1000, v);
+    sl.style.setProperty('--pct', (Math.min(1000, v) / 10) + '%');
+    this.syncPresets();
+  },
+  syncPresets() {
+    const v = parseFloat($('rangeInput').value);
+    for (const b of $('presets').children) b.setAttribute('aria-pressed', String(+b.dataset.r === v));
+  },
+  syncModeButtons() {
+    for (const b of $('modes').children) {
+      const on = b.dataset.mode === this.view.mode;
+      b.setAttribute('aria-checked', String(on));
+      b.tabIndex = on ? 0 : -1;
+    }
+  },
+  syncPrivateToggle() {
+    const pub = $('fPublic').checked;
+    $('fPrivate').disabled = pub;
+    $('fPrivateWrap').classList.toggle('dis', pub);
+  },
+
+  /* ---------- bindings ---------- */
+  bindControls() {
+    const ri = $('rangeInput'), sl = $('rangeSlider');
+    ri.addEventListener('input', () => {
+      this.sizeRangeInput();
+      const v = parseFloat(ri.value);
+      if (!(v >= 10 && v <= 5000)) return;
+      sl.value = Math.min(1000, v); sl.style.setProperty('--pct', (Math.min(1000, v) / 10) + '%');
+      this.onRangeChange();
+    });
+    ri.addEventListener('change', () => {
+      const v = clamp(parseFloat(ri.value) || 270, 10, 5000);
+      ri.value = Math.round(v * 10) / 10;
+      this.syncRangeWidgets(); this.onRangeChange();
+    });
+    sl.addEventListener('input', () => {
+      const v = Math.max(10, +sl.value);
+      ri.value = v; sl.style.setProperty('--pct', (Math.min(1000, v) / 10) + '%');
+      this.sizeRangeInput(); this.onRangeChange();
+    });
+    $('presets').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-r]');
+      if (!b) return;
+      ri.value = b.dataset.r; this.syncRangeWidgets(); this.onRangeChange();
+    });
+    for (const id of ['rmReserve', 'rmDivert', 'rmBasis']) $(id).addEventListener(id === 'rmBasis' ? 'change' : 'input', () => this.onRangeChange());
+    for (const id of ['fMinRwy', 'fMaxElev', 'fCountries', 'daRwy', 'daPct', 'daIsa']) $(id).addEventListener('input', () => this.onEligChange());
+    for (const id of ['fPaved', 'fPublic', 'fPrivate', 'fUnknownRwy', 'fTypeS', 'fTypeM', 'fTypeL', 'fTypeW', 'daOn']) $(id).addEventListener('change', () => this.onEligChange());
+    for (const id of ['tgMarkers', 'tgCircles', 'tgLabels']) $(id).addEventListener('change', () => this.onViewChange());
+    const modes = $('modes');
+    modes.addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-mode]');
+      if (!b) return;
+      this.view.mode = b.dataset.mode; this.onViewChange();
+    });
+    modes.addEventListener('keydown', (e) => {
+      if (!/^Arrow(Left|Right|Up|Down)$/.test(e.key)) return;
+      e.preventDefault();
+      const list = [...modes.children], i = list.findIndex((b) => b.dataset.mode === this.view.mode);
+      const n = list[(i + (/Right|Down/.test(e.key) ? 1 : list.length - 1)) % list.length];
+      this.view.mode = n.dataset.mode; this.onViewChange(); n.focus();
+    });
+    $('zIn').addEventListener('click', () => this.map.zoomBy(1));
+    $('zOut').addEventListener('click', () => this.map.zoomBy(-1));
+    $('zReset').addEventListener('click', () => this.map.resetView());
+    const ctl = $('controls'), openB = $('openControls');
+    const setDrawer = (open) => { ctl.classList.toggle('open', open); openB.setAttribute('aria-expanded', String(open)); if (open) $('closeControls').focus(); };
+    openB.addEventListener('click', () => setDrawer(true));
+    $('closeControls').addEventListener('click', () => { setDrawer(false); openB.focus(); });
+    $('map').addEventListener('pointerdown', () => { if (ctl.classList.contains('open')) setDrawer(false); });
+    $('legendBtn').addEventListener('click', (e) => {
+      const lg = $('legend'), on = !lg.classList.contains('show');
+      lg.classList.toggle('show', on); e.currentTarget.setAttribute('aria-pressed', String(on));
+    });
+    $('exportElig').addEventListener('click', () => this.saveText('eligible_airports.csv', this.eligibleCsv()));
+    $('useDemo').addEventListener('click', () => this.useDemo());
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (!$('searchList').hidden) return;
+      if (ctl.classList.contains('open')) { setDrawer(false); openB.focus(); return; }
+      if (document.activeElement && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
+      this.clearSelection();
+    });
+  },
+  bindSearch() {
+    const inp = $('search'), list = $('searchList');
+    let items = [], active = -1;
+    const close = () => { list.hidden = true; inp.setAttribute('aria-expanded', 'false'); inp.removeAttribute('aria-activedescendant'); };
+    const render = () => {
+      const A = this.ds.airports, E = this.st.E;
+      if (!inp.value.trim()) { close(); return; }
+      if (!items.length) list.innerHTML = '<li class="no">No airport matches “' + esc(inp.value.trim()) + '”.</li>';
+      else list.innerHTML = items.map((i, k) => {
+        const a = A[i], el = E && E.pos[i] >= 0;
+        return '<li role="option" id="sr' + k + '" data-ai="' + i + '" aria-selected="' + (k === active) + '"><b>' + esc(a.ident) + '</b><span>' + esc(a.name) + '</span><span class="x">' + esc([a.iata, a.city, a.country].filter(Boolean).join(', ')) + (el ? '' : ', not eligible') + '</span></li>';
+      }).join('');
+      list.hidden = false; inp.setAttribute('aria-expanded', 'true');
+      if (active >= 0) inp.setAttribute('aria-activedescendant', 'sr' + active);
+    };
+    const choose = (ai) => { close(); inp.value = ''; inp.blur(); this.select(ai, { fly: true }); };
+    inp.addEventListener('input', () => { items = this.search(inp.value); active = items.length ? 0 : -1; render(); });
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' && items.length) { e.preventDefault(); active = (active + 1) % items.length; render(); }
+      else if (e.key === 'ArrowUp' && items.length) { e.preventDefault(); active = (active - 1 + items.length) % items.length; render(); }
+      else if (e.key === 'Enter' && active >= 0) { e.preventDefault(); choose(items[active]); }
+      else if (e.key === 'Escape') { close(); inp.value = ''; }
+    });
+    inp.addEventListener('focus', () => { if (inp.value.trim()) render(); });
+    inp.addEventListener('blur', () => setTimeout(close, 150));
+    list.addEventListener('mousedown', (e) => { const li = e.target.closest('li[data-ai]'); if (li) { e.preventDefault(); choose(+li.dataset.ai); } });
+  },
+  bindInfo() {
+    const el = $('info');
+    el.addEventListener('click', (e) => {
+      const t = e.target.closest('[data-act],[data-sort],tr[data-ai]');
+      if (!t) return;
+      if (t.dataset.sort) {
+        const k = t.dataset.sort;
+        this.sort = this.sort.key === k ? { key: k, dir: -this.sort.dir } : { key: k, dir: k === 'r' ? -1 : 1 };
+        this.renderInfo(); return;
+      }
+      if (t.dataset.ai) { this.select(+t.dataset.ai, { pan: true }); return; }
+      const st = this.st, a = this.ds.airports[st.sel];
+      switch (t.dataset.act) {
+        case 'close': this.clearSelection(); break;
+        case 'zoom': this.map.fitCircle(a.lat, a.lon, Math.max(st.radius, st.leg)); break;
+        case 'connect': this.view.mode = 'connect'; this.onViewChange(); break;
+        case 'csv': this.saveText('reachable_from_' + a.ident + '_' + Math.round(st.leg) + 'nmi.csv', this.reachCsv()); break;
+        case 'more': this.showAll = true; this.renderInfo(); break;
+        case 'clearRoute': st.route = null; this.renderInfo(); this.renderLegend(); this.map.invalidate(); break;
+        case 'route': this.routeFromInput(); break;
+        default: break;
+      }
+    });
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.id === 'routeTo') { e.preventDefault(); this.routeFromInput(); return; }
+      if (e.key === 'Enter' && e.target.matches('tr[data-ai]')) { e.preventDefault(); this.select(+e.target.dataset.ai, { pan: true }); }
+    });
+  },
+  routeFromInput() {
+    const v = $('routeTo').value, ai = this.findAirport(v);
+    if (ai < 0) { this.toast('No airport matches “' + v.trim() + '”.'); return; }
+    if (ai === this.st.sel) { this.toast('Choose a destination other than the selected airport.'); return; }
+    this.computeRoute(ai);
+    this.renderLegend();
+  },
+  bindFiles() {
+    $('fileInput').addEventListener('change', (e) => { if (e.target.files.length) this.loadFiles(e.target.files); e.target.value = ''; });
+    const wrap = $('mapwrap'), drop = $('drop');
+    let depth = 0;
+    wrap.addEventListener('dragenter', (e) => { if (e.dataTransfer && [...e.dataTransfer.types].includes('Files')) { e.preventDefault(); depth++; drop.hidden = false; } });
+    wrap.addEventListener('dragover', (e) => { if (e.dataTransfer && [...e.dataTransfer.types].includes('Files')) e.preventDefault(); });
+    wrap.addEventListener('dragleave', () => { depth = Math.max(0, depth - 1); if (!depth) drop.hidden = true; });
+    wrap.addEventListener('drop', (e) => { e.preventDefault(); depth = 0; drop.hidden = true; if (e.dataTransfer && e.dataTransfer.files.length) this.loadFiles(e.dataTransfer.files); });
+  },
+
+  /* ---------- basemap (Natural Earth TopoJSON bundled in Datamaps) ---------- */
+  loadBasemap() {
+    const urls = [
+      'https://cdnjs.cloudflare.com/ajax/libs/datamaps/0.5.9/datamaps.world.hires.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/datamaps/0.5.9/datamaps.world.min.js',
+    ];
+    let i = 0;
+    const next = () => {
+      if (i >= urls.length) { this.toast('Coastlines could not be loaded, so the map shows the graticule only. Airports and coverage are unaffected.', 7000); return; }
+      const s = document.createElement('script');
+      s.src = urls[i++]; s.async = true;
+      let done = false;
+      const timer = setTimeout(() => { if (!done) { done = true; s.remove(); next(); } }, 20000);
+      s.onload = () => {
+        if (done) return;
+        done = true; clearTimeout(timer);
+        try {
+          const topo = window.Datamap && window.Datamap.prototype && window.Datamap.prototype.worldTopo;
+          if (!topo || typeof topo !== 'object') throw new Error('no topology');
+          this.map.setLand(topoRings(topo));
+        } catch (_) { next(); }
+      };
+      s.onerror = () => { if (done) return; done = true; clearTimeout(timer); next(); };
+      document.head.appendChild(s);
+    };
+    next();
+  },
+};
+
+App.init();
+</script>
+</body>
+</html>
