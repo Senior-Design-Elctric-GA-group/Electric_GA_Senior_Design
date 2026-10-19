@@ -1,6 +1,6 @@
 Contents
 
-Interactive Constraint UI:((https://CameronTspk.github.io/Electric_GA_Senior_Design/Constraint/Electric GA Constraint Analysis.html)
+Interactive Constraint UI:(https://senior-design-elctric-ga-group.github.io/Electric_GA_Senior_Design/Constraint/EGA_Constraint.html)
 
 Single Calculation iteration example
 Matlab:(Insert Here)
